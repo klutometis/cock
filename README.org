@@ -19,3 +19,11 @@
 
   This issue with using reader-macros in compiled code is documented
   [[http://wiki.call-cc.org/man/4/faq#why-does-define-reader-ctornot-work-in-my-compiled-program][here]] and [[http://wiki.call-cc.org/man/4/faq#why-does-define-reader-ctornot-work-in-my-compiled-program][here]].
+  If you're using [[http://wiki.call-cc.org/eggref/4/autocompile][autocompile]] to run Chicken scripts, set the
+  environment accordingly:
+
+  #+BEGIN_QUOTE
+  #+BEGIN_EXAMPLE
+    CHICKEN_SCHEME_OPTIONS="-X cock" ./your-chicken-script.scm
+  #+END_EXAMPLE
+  #+END_QUOTE
