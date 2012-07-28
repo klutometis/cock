@@ -6,20 +6,16 @@
   =Cock= uses reader macros, which work out-of-the-box in interpreted
   code; this should suffice for interpreted code:
 
-  #+BEGIN_QUOTE
   #+BEGIN_SRC scheme
     (use cock)
   #+END_SRC
-  #+END_QUOTE
 
   Compiled code, on the other hand, requires passing an option to the
   compiler in addition to the =use= statement:
 
-  #+BEGIN_QUOTE
   #+BEGIN_EXAMPLE
     -X cock
   #+END_EXAMPLE
-  #+END_QUOTE
 
   This issue with using reader-macros in compiled code is documented
   [[http://wiki.call-cc.org/man/4/faq#why-does-define-reader-ctornot-work-in-my-compiled-program][here]] and [[http://wiki.call-cc.org/man/4/faq#why-does-define-reader-ctornot-work-in-my-compiled-program][here]].
