@@ -16,9 +16,9 @@
   #+BEGIN_EXAMPLE
     -X cock
   #+END_EXAMPLE
+  (This issue with using reader-macros in compiled code is documented
+  [[http://wiki.call-cc.org/man/4/faq#why-does-define-reader-ctornot-work-in-my-compiled-program][here]] and [[http://wiki.call-cc.org/man/4/faq#why-does-define-reader-ctornot-work-in-my-compiled-program][here]].)
 
-  This issue with using reader-macros in compiled code is documented
-  [[http://wiki.call-cc.org/man/4/faq#why-does-define-reader-ctornot-work-in-my-compiled-program][here]] and [[http://wiki.call-cc.org/man/4/faq#why-does-define-reader-ctornot-work-in-my-compiled-program][here]].
   If you're using [[http://wiki.call-cc.org/eggref/4/autocompile][autocompile]] to run Chicken scripts, set the
   environment accordingly:
 
