@@ -4,7 +4,7 @@
   maybe HTML.
 * Using =cock=
   =Cock= uses reader macros, which work out-of-the-box in interpreted
-  code; this should suffice for interpreted code:
+  code; simply:
 
   #+BEGIN_SRC scheme
     (use cock)
