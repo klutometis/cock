@@ -1,0 +1,2 @@
+* Cock
+  In-source documentation for Chicken scheme

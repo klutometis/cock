@@ -1,0 +1,7 @@
+(compile -d0 -O2 -J -s cock.scm)
+(compile -d0 -O2 -s cock.import.scm)
+
+(install-extension
+ 'cock
+ '("cock.so" "cock.import.so")
+ '((version "0.0.1")))
