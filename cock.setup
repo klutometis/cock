@@ -1,7 +1,5 @@
-(compile -d0 -O2 -J -s cock.scm)
-(compile -d0 -O2 -s cock.import.scm)
+(include "setup-helper")
 
-(install-extension
+(setup-shared-extension-module
  'cock
- '("cock.so" "cock.import.so")
- '((version "0.0.1")))
+ '(version "0.0.1"))
