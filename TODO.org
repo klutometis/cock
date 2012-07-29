@@ -1,0 +1,14 @@
+* TODO Test the embedded reader-macro with compiled code.
+  #+BEGIN_SRC scheme :tangle test-compiled.scm :shebang #!/usr/bin/env chicken-scheme
+    (use cock)
+    
+    @(test "This should be a noöp.")
+    
+  #+END_SRC
+
+  [[http://wiki.call-cc.org/man/4/faq#why-does-define-reader-ctornot-work-in-my-compiled-program][Readers in compiled code]].
+
+  #+BEGIN_SRC sh :tangle test-compiled.sh :shebang #!/usr/bin/env bash
+    CHICKEN_SCHEME_OPTIONS="-X cock" ./test-compiled.scm
+    
+  #+END_SRC
