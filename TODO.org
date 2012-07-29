@@ -18,6 +18,7 @@
   Authors, &c.
 * TODO Test parse module.
   #+BEGIN_SRC scheme
+    (use cock)
     (include "cock-parse")
     
   #+END_SRC
