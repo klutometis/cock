@@ -32,4 +32,22 @@
     CHICKEN_SCHEME_OPTIONS="-X cock" ./your-chicken-script.scm  
   #+END_SRC
   #+END_QUOTE
+
+  Similarly, in your egg =.setup= file, try:
+
+  #+BEGIN_QUOTE
+  #+BEGIN_SRC scheme
+    (compile -X cock -d0 -O2 -J -s "example.scm")  
+  #+END_SRC
+  #+END_QUOTE
+
+  or if you use =setup-helper=:
+
+  #+BEGIN_QUOTE
+  #+BEGIN_SRC scheme
+    (setup-shared-extension-module
+     'example
+     '(version "0.0.1")
+     compile-options: '(-X cock))    
+  #+END_SRC
   #+END_QUOTE
