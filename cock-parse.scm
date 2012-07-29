@@ -1,7 +1,24 @@
 (module cock-parse
-  ()
-  (import chicken scheme)
+  (parse-file
+   tex-write-docexprs)
+  (import chicken
+          data-structures
+          extras
+          ports
+          scheme)
   (use alist-lib
+       ;; Do we want cock here? Does it matter? When called as a
+       ;; module, what's the relationship to -X cock? I'm including
+       ;; it, and thus need to (use cock) (include "cock-parse").
+       ;;
+       ;; http://srfi.schemers.org/srfi-17/srfi-17.html and
+       ;; http://srfi.schemers.org/srfi-61/srfi-61.html are cool, by
+       ;; the way: arbitrary lvalues in set! and (<generator> <guard>
+       ;; => <receiver>) in cond.
+       ;;
+       ;; Cock, I think, is irrelevant here: it needs to be -X cock or
+       ;; we need to parse this with cock-parse.
+       cock
        debug
        define-record-and-printer
        lolevel
@@ -14,10 +31,10 @@
 
   (import-for-syntax matchable)
 
-  (define (with-new-doctable thunk)
-    (parameterize ((current-doctable (make-hash-table)))
-      (thunk)))
-
+  (define current-docexpr
+    @("Enables communication with the parsing @-reader")
+    (make-parameter #f))
+    
   (define docexprs (make-parameter (make-stack)))
 
   (define-record-and-printer null-expression)
@@ -481,16 +498,6 @@
                    (parse-syntax tex-parse-syntax))
       (parse-docexpr document docexpr)))
 
-  (with-input-from-file "doc.scm"
-    (lambda ()
-      (let read-next ((expression (read)))
-        (if (not (eof-object? expression))
-            (begin
-              (if (current-docexpr)
-                  (docexpr-expr-set! (stack-peek (docexprs)) expression))
-              (current-docexpr #f)
-              (read-next (read)))))))
-
   (define (tex-parse-docexprs document docexprs)
     (let ((parsed-docexprs (make-stack)))
       (stack-for-each
@@ -500,21 +507,31 @@
                       (tex-parse-docexpr document docexpr))))
       parsed-docexprs))
 
-  (let* ((document (make-document (make-hash-table) (make-stack)))
-         (parsed-docexprs (tex-parse-docexprs document (docexprs))))
-    (let ((data (document-data document)))
-      (write-template
-       tex-preamble
-       `((author . ,(hash-table-ref/default data
-                                            'author
-                                            "Anonymous"))
-         (email . ,(hash-table-ref/default data
-                                           'email
-                                           "anonymous@example.org"))
-         (title . ,(hash-table-ref/default data
-                                           'title
-                                           "Documentation")))))
-    (do ((docexpr (stack-pop! parsed-docexprs) (stack-pop! parsed-docexprs)))
-        ((stack-empty? parsed-docexprs))
-      (docexpr))
-    (display tex-footer)))
+  (define (parse-file file)
+    (with-input-from-file file
+      (lambda ()
+        (let read-next ((expression (read)))
+          (if (not (eof-object? expression))
+              (begin
+                (if (current-docexpr)
+                    (docexpr-expr-set! (stack-peek (docexprs)) expression))
+                (current-docexpr #f)
+                (read-next (read))))))))
+
+  (define (tex-write-docexprs docexprs)
+    (let* ((document (make-document (make-hash-table) (make-stack)))
+           (parsed-docexprs (tex-parse-docexprs document (docexprs))))
+      (let ((data (document-data document)))
+        (write-template
+         tex-preamble
+         `((author . ,(hash-table-ref/default data
+                                              'author
+                                              "Anonymous"))
+           (email . ,(hash-table-ref/default data
+                                             'email
+                                             "anonymous@example.org"))
+           (title . ,(hash-table-ref/default data
+                                             'title
+                                             "Documentation")))))
+      (stack-for-each parsed-docexprs (lambda (docexpr) (docexpr)))
+      (display tex-footer))))
