@@ -1,3 +1,6 @@
+* TODO Records
+* TODO Multiple authors (maintainer, &c.)
+  [[http://tex.stackexchange.com/questions/9594/adding-more-than-one-author-with-different-affiliation][Using footnotes]] and [[http://tex.stackexchange.com/questions/4805/whats-the-correct-use-of-author-when-multiple-authors][using \texttt{\char`\\ and}]].
 * TODO Test the embedded reader-macro with compiled code.
   #+BEGIN_SRC scheme :tangle test-compiled.scm :shebang #!/usr/bin/env chicken-scheme
     (use cock)
