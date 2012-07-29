@@ -1,3 +1,26 @@
+* TODO Ability to suppress internally documented functions.
+  Let's use =@internal=. Or: instead of =@<identifier>=, we should
+  reuse the keyword mechanism? Principle of least surprise? Would look
+  like: =internal:=. All the asperands are alien, I think.
+
+  On the other hand, how would you document keywords? No, we have to
+  resort to something noisy.
+
+  #+BEGIN_SRC scheme
+    (define (procedure a)
+      @("Procedure does something."
+        (a "Parameter")
+        ;; If we do this, we can't document keywords named `to:'.
+        (to: "Another thing"))
+      'b)
+  #+END_SRC
+* TODO Get metadata from egg.
+  Authors, &c.
+* TODO Test parse module.
+  #+BEGIN_SRC scheme
+    (include "cock-parse")
+    
+  #+END_SRC
 * TODO Records
 * TODO Multiple authors (maintainer, &c.)
   [[http://tex.stackexchange.com/questions/9594/adding-more-than-one-author-with-different-affiliation][Using footnotes]] and [[http://tex.stackexchange.com/questions/4805/whats-the-correct-use-of-author-when-multiple-authors][using \texttt{\char`\\ and}]].
