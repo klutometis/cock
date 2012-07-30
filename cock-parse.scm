@@ -18,7 +18,7 @@
        ;;
        ;; Cock, I think, is irrelevant here: it needs to be -X cock or
        ;; we need to parse this with cock-parse.
-       cock
+       ;; cock
        debug
        define-record-and-printer
        lolevel
