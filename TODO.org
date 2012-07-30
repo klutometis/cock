@@ -11,8 +11,54 @@
       @("Procedure does something."
         (a "Parameter")
         ;; If we do this, we can't document keywords named `to:'.
-        (to: "Another thing"))
+        (to: "Another thing")
+        ;; That's why we settled on this:
+        (@to "Another thing")
+        @internal)
       'b)
+  #+END_SRC
+
+  Or, fuck it: just use naked symbols:
+
+  #+BEGIN_SRC scheme
+    (define (procedure a)
+      @("Procedure does something."
+        (a "Parameter")
+        ;; Don't see how we can get around this one.
+        (@to "Another thing")
+        internal)
+      'b)
+    
+    (define (procedure a)
+      @("Procedure does something."
+        (parameters
+         (a "Parameter"))
+        ;; Don't see how we can get around this one.
+        (to "Another thing")
+        internal)
+      'b)
+    
+    (define (procedure a)
+      @("Procedure does something."
+        (a "Parameter")
+        ;; Don't see how we can get around this one.
+        to: "Another thing"
+        internal:)
+      'b)
+    
+    ;;; If we're going keyword-heavy:
+    
+    (define (procedure a)
+      ;; `description:' already fucks up the indentation.
+      @(description: "Procedure does something."
+                     parameters:))
+    
+    (define (procedure a)
+      @("Procedure does something."
+        parameters: '((a "Parameter"))
+        to: "Another thing"
+        internal: #t))
+    
   #+END_SRC
 * TODO Get metadata from egg.
   Authors, &c.
