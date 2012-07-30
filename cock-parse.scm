@@ -508,15 +508,17 @@
       parsed-docexprs))
 
   (define (parse-file file)
-    (with-input-from-file file
-      (lambda ()
-        (let read-next ((expression (read)))
-          (if (not (eof-object? expression))
-              (begin
-                (if (current-docexpr)
-                    (docexpr-expr-set! (stack-peek (docexprs)) expression))
-                (current-docexpr #f)
-                (read-next (read))))))))
+    (parameterize ((docexprs (make-stack)))
+      (with-input-from-file file
+        (lambda ()
+          (let read-next ((expression (read)))
+            (if (not (eof-object? expression))
+                (begin
+                  (if (current-docexpr)
+                      (docexpr-expr-set! (stack-peek (docexprs)) expression))
+                  (current-docexpr #f)
+                  (read-next (read)))))))
+      (docexprs)))
 
   (define (tex-write-docexprs docexprs)
     (let* ((document (make-document (make-hash-table) (make-stack)))
