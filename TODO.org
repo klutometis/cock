@@ -10,6 +10,10 @@
   #+END_SRC
 
   we can come up with any number of short-hands that reduce to it.
+* TODO =read=
+  It looks like read optionally [[http://wiki.call-cc.org/eggref/4/lazy-ffi#read-syntax][takes parameters]]; it appears as though
+  a =@to= is necessary. Initial parameter should be something
+  describing the read-form; e.g. =#~string=, =#~(item ...)=.
 * TODO Ability to suppress internally documented functions.
   Let's use =@internal=. Or: instead of =@<identifier>=, we should
   reuse the keyword mechanism? Principle of least surprise? Would look
