@@ -79,9 +79,23 @@
 * TODO Get metadata from egg.
   Authors, &c.
 * TODO Test parse module.
-  #+BEGIN_SRC scheme
-    (use cock)
+  #+BEGIN_SRC scheme :tangle test-parse.scm :shebang #!/usr/bin/env chicken-scheme
     (include "cock-parse")
+    (import cock-parse)
+    (use debug)
+    (define (procedure a)
+      @("Do something."
+        (a "Thing to do")
+        (@to "Thing done"))
+      (void))
+    
+    (define (procedure a)
+      @(description: "Do something."
+                     parameters: ((a "Thing to do"))
+                     to: "Thing done")
+      (void))
+    
+    (debug (parse-file "test-parse.scm"))
     
   #+END_SRC
 * TODO Records
