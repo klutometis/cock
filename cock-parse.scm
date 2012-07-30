@@ -34,7 +34,7 @@
   (define current-docexpr
     @("Enables communication with the parsing @-reader")
     (make-parameter #f))
-    
+
   (define docexprs (make-parameter (make-stack)))
 
   (define-record-and-printer null-expression)
@@ -143,9 +143,9 @@
        template
        (map
         (match-lambda ((key . value)
-                       (cons
-                        (format "@~a@" (string-upcase (symbol->string key)))
-                        (->string value))))
+                  (cons
+                   (format "@~a@" (string-upcase (symbol->string key)))
+                   (->string value))))
         substitutions)
        #f)))) 
 
