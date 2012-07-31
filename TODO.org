@@ -89,13 +89,20 @@
         (@to "Thing done"))
       (void))
     
-    (define (procedure a)
-      @(description: "Do something."
-                     parameters: ((a "Thing to do"))
-                     to: "Thing done")
-      (void))
+    (define (tex-procedure-to special-parameters)
+      @("Was, are we wirklich?"
+        (special-parameters "Very special")
+        (@to "There procedure thither"))
+      (alist-ref/default special-parameters '@to '("unspecified")))
     
-    (debug (parse-file "test-parse.scm"))
+    (define-syntax harro
+      @("Tharths; tharths very thither."
+        (x "An opacity")
+        (... "Other opacities")
+        (@to "Clairvoyance"))
+      (lambda (e r c) 2))
+    
+    (tex-write-docexprs (parse-file "test-parse.scm"))
     
   #+END_SRC
 * TODO Records
