@@ -44,14 +44,15 @@
   (set-read-syntax! #\@
     (lambda (in)
       (let ((expression (read in)))
-        (if (symbol? expression)
-            expression
-            (begin
-              (current-docexpr expression)
-              (stack-push! (docexprs)
-                           (make-docexpr (current-docexpr)
-                                         null-expression))
-              (values))))))
+        (cond ((symbol? expression)
+               (prepend-@ expression))
+              ((pair? expression)
+               (current-docexpr expression)
+               (stack-push! (docexprs)
+                            (make-docexpr (current-docexpr)
+                                          null-expression))
+               (values))
+              (else expression)))))
 
   (define-record-and-printer docexpr
     doc
