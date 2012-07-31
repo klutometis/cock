@@ -227,6 +227,9 @@
   (define tex-syntax
     "\\item[Syntax] \\texttt{@NAME-AND-FORMALS@ $\\to$ @TO@}")
 
+  (define tex-read
+    "\\item[Read] \\texttt{@FORM@ $\\to$ @TO@}")
+
   (define tex-parameters
     "\\item[Parameters]
 \\begin{tabularx}{\\textwidth}[t]{lX}
