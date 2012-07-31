@@ -534,7 +534,7 @@
 
   (define (tex-write-docexprs docexprs)
     (let* ((document (make-document (make-hash-table) (make-stack)))
-           (parsed-docexprs (tex-parse-docexprs document (docexprs))))
+           (parsed-docexprs (tex-parse-docexprs document docexprs)))
       (let ((data (document-data document)))
         (write-template
          tex-preamble
