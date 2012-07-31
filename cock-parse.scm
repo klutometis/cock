@@ -325,7 +325,14 @@
            (hash-table-set! data 'heading-level 2)
            (write-template
             tex-subheading
-            `((title . ,(car arguments)))))))))
+            `((title . ,(car arguments))))))
+        ((read)
+         (match arguments
+           ((syntax . description-&c.)
+            (receive (normal-parameters special-parameters)
+              (doc-normal-and-special-parameters description-&c.)
+              (lambda ()
+                ))))))))
 
   (define (write-tex-block doc
                            expr
