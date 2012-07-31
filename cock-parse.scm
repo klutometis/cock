@@ -5,7 +5,9 @@
           data-structures
           extras
           ports
-          scheme)
+          scheme
+          srfi-1
+          stack)
   (use alist-lib
        ;; Do we want cock here? Does it matter? When called as a
        ;; module, what's the relationship to -X cock? I'm including
