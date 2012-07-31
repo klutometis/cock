@@ -102,6 +102,10 @@
         (@to "Clairvoyance"))
       (lambda (e r c) 2))
     
+    @(read #~library
+           "Registers a shared library."
+           (library "The library to register"))
+    
     (tex-write-docexprs (parse-file "test-parse.scm"))
     
   #+END_SRC
