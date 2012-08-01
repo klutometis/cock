@@ -134,7 +134,7 @@
          ((parse-scalar) doc expr data scalar))
         (('define-syntax name . _)
          ((parse-syntax) doc expr data name))
-        (_ 'unknown))))
+        (_ values))))
 
   (define substitute-template
     (case-lambda
