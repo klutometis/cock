@@ -102,7 +102,7 @@
         (@to "Clairvoyance"))
       (lambda (e r c) 2))
     
-    @(read #~library
+    @(read "#~library"
            "Registers a shared library."
            (library "The library to register"))
     
