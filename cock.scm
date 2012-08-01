@@ -1,7 +1,6 @@
 (module cock
   (prepend-@)
   (import chicken scheme)
-  (use coerce debug)
 
   (define (prepend-@ symbol)
     (string->symbol
