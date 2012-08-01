@@ -300,40 +300,6 @@
   (define (texify object)
     (string-substitute* (->string object) tex-substitutions #f))
 
-  (define (tex-parse-directive doc expr data document)
-    (let ((directive (car doc))
-          (arguments (cdr doc))
-          (data (document-data document)))
-      (case directive
-        ((email)
-         (hash-table-set! data 'email (car arguments))
-         void)
-        ((author)
-         (hash-table-set! data 'author (car arguments))
-         void)
-        ((title)
-         (hash-table-set! data 'title (car arguments))
-         void)
-        ((heading)
-         (lambda ()
-           (hash-table-set! data 'heading-level 1)
-           (write-template
-            tex-heading
-            `((title . ,(car arguments))))))
-        ((subheading)
-         (lambda ()
-           (hash-table-set! data 'heading-level 2)
-           (write-template
-            tex-subheading
-            `((title . ,(car arguments))))))
-        ((read)
-         (match arguments
-           ((syntax . description-&c.)
-            (receive (normal-parameters special-parameters)
-              (doc-normal-and-special-parameters description-&c.)
-              (lambda ()
-                ))))))))
-
   (define (write-tex-block doc
                            expr
                            data
@@ -365,6 +331,53 @@
                     (lambda ()
                       (pp expr))))
          (name . ,name)))))
+
+  (define (tex-parse-directive doc expr data document)
+    (let ((directive (car doc))
+          (arguments (cdr doc))
+          (data (document-data document)))
+      (case directive
+        ((email)
+         (hash-table-set! data 'email (car arguments))
+         void)
+        ((author)
+         (hash-table-set! data 'author (car arguments))
+         void)
+        ((title)
+         (hash-table-set! data 'title (car arguments))
+         void)
+        ((heading)
+         (lambda ()
+           (hash-table-set! data 'heading-level 1)
+           (write-template
+            tex-heading
+            `((title . ,(car arguments))))))
+        ((subheading)
+         (lambda ()
+           (hash-table-set! data 'heading-level 2)
+           (write-template
+            tex-subheading
+            `((title . ,(car arguments))))))
+        ((read)
+         (match arguments
+           ((syntax . description-&c.)
+            (receive (normal-parameters special-parameters)
+              (doc-normal-and-special-parameters description-&c.)
+              (let* ((to (tex-procedure-to special-parameters))
+                     (read (substitute-template
+                            tex-read
+                            `((form . ,syntax)
+                              (to . ,to)))))
+                (let ((parameters (make-tex-parameters normal-parameters)))
+                  (debug syntax read parameters)
+                  (lambda ()
+                    (write-tex-block
+                     doc
+                     expr
+                     data
+                     syntax
+                     read
+                     parameters)))))))))))
 
   (define (make-tex-procedure template name formals to)
     (substitute-template
