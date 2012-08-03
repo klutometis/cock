@@ -107,9 +107,23 @@
         (@to "Clairvoyance"))
       (lambda (e r c) 2))
     
-    @(read "#~library"
-           "Registers a shared library."
-           (library "The library to register"))
+    (set-sharp-read-syntax!
+     @("Registers a shared library."
+       (library "The library to register"))
+     #\&
+     void)
+    
+    (set-read-syntax!
+        @("Registers a shared library."
+          (library "The library to register"))
+     #\&
+     void)
+    
+    (set-parameterized-read-syntax!
+     @("Registers a shared library."
+       (library "The library to register"))
+     #\&
+     void)
     
     (tex-write-docexprs (parse-file "test-parse.scm"))
     
