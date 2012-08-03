@@ -70,6 +70,8 @@
 
   (define parse-syntax (make-parameter void))
 
+  (define parse-read (make-parameter void))
+
   ;; Somehow, we have to process these preamble-directives before we
   ;; spit the document out; could it be that we have to keep the thing
   ;; in memory before we spit it out?
