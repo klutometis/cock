@@ -136,6 +136,10 @@
         (('define-syntax name . _)
          ((parse-syntax) doc expr data name))
         (_ values))))
+        ((or ('set-read-syntax! char-or-symbol proc)
+             ('set-sharp-read-syntax! char-or-symbol proc)
+             ('set-parameterized-read-syntax! char-or-symbol proc))
+         ((parse-read) doc expr data char-or-symbol))
 
   (define substitute-template
     (case-lambda
