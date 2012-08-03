@@ -368,27 +368,8 @@
            (hash-table-set! data 'heading-level 2)
            (write-template
             tex-subheading
-            `((title . ,(car arguments))))))
-        ((read)
-         (match arguments
-           ((syntax . description-&c.)
-            (receive (normal-parameters special-parameters)
-              (doc-normal-and-special-parameters description-&c.)
-              (let* ((to (tex-procedure-to special-parameters))
-                     (read (substitute-template
-                            tex-read
-                            `((form . ,syntax)
-                              (to . ,to)))))
-                (let ((parameters (make-tex-parameters normal-parameters)))
-                  (debug syntax read parameters)
-                  (lambda ()
-                    (write-tex-block
-                     doc
-                     expr
-                     data
-                     syntax
-                     read
-                     parameters)))))))))))
+            `((title . ,(car arguments)))))) 
+        (else (error "tex-parse-directive -- Unknown directive" directive)))))
 
   (define (make-tex-procedure template name formals to)
     (substitute-template
