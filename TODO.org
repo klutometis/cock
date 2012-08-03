@@ -1,3 +1,5 @@
+* TODO Classes?
+  Maybe this can be an extension.
 * TODO Source at end?
 * TODO Types from the Chicken wiki
   See [[https://wiki.call-cc.org/edit-help][here]]:
