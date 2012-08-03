@@ -1,7 +1,8 @@
 (module cock-parse
   (parse-file
    tex-write-docexprs)
-  (import chicken
+  (import alist-lib
+          chicken
           data-structures
           extras
           ports
