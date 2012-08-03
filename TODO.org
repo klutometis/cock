@@ -1,3 +1,6 @@
+* TODO Line-numbers are pretty meaningless.
+  Not only do they not correspond to the file, they're even
+  inconsistent within the function; since they go through =pp=.
 * TODO Binary
   Initially, let's parse individual files; but let's quickly follow up
   with something for eggs that reads name, email, &c. from there:
