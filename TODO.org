@@ -1,3 +1,4 @@
+* TODO Source at end?
 * TODO Define an intermediate long-hand.
   If this, for instance, is our long-hand:
 
