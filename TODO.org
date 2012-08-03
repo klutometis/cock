@@ -99,7 +99,7 @@
   #+BEGIN_SRC scheme :tangle test-parse.scm :shebang #!/usr/bin/env chicken-scheme
     (include "cock-parse")
     (import cock-parse)
-    (use debug)
+    (use debug defstruct)
     
     @(heading "Harro thar!")
     
@@ -141,6 +141,31 @@
        (library "The library to register"))
      #\&
      void)
+    
+    (defstruct a
+      @("This is for reals."
+        (b "Yes")
+        (c "No")
+        (d "Maybe"))
+      b c d)
+    
+    (define-record a
+      @("This is for reals."
+        (b "Yes")
+        (c "No")
+        (d "Maybe"))
+      b c d)
+    
+    (define-record-type a
+      @("This is for reals."
+        (b "Yes")
+        (c "No")
+        (d "Maybe"))
+      (make-a b c d)
+      a?
+      (b a-b set-a-b!)
+      (c a-c set-a-c!)
+      (d a-d set-a-d!))
     
     (tex-write-docexprs (parse-file "test-parse.scm"))
     
