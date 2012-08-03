@@ -530,7 +530,8 @@
                    (parse-case-lambda tex-parse-case-lambda)
                    (parse-parameter tex-parse-parameter)
                    (parse-scalar tex-parse-scalar)
-                   (parse-syntax tex-parse-syntax))
+                   (parse-syntax tex-parse-syntax)
+                   (parse-read tex-parse-read))
       (parse-docexpr document docexpr)))
 
   (define (tex-parse-docexprs document docexprs)
