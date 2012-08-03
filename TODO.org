@@ -1,3 +1,16 @@
+* TODO Binary
+  Initially, let's parse individual files; but let's quickly follow up
+  with something for eggs that reads name, email, &c. from there:
+  possibly converts =includes= into sections.
+
+  What should the actual name of the includes section be, though; fuck
+  it: maybe do the include and look for =@(heading ...)=; yes.
+
+  Maybe all we have to do is parse the metadata and cat the .scm files
+  into cock; how do we control the order of the files, though, if not
+  for =include=? But then we have to scour everything for =include=.
+
+  If only we could depend upon Chicken to do the stitching.
 * TODO Classes?
   Maybe this can be an extension.
 * TODO Source at end?
