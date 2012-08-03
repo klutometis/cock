@@ -124,9 +124,8 @@
       (match expr
         ((? null-expression?)
          ((parse-directive) doc expr data document))
-        (('define (procedure . formals) . body)
-         ((parse-procedure) doc expr data procedure formals))
-        (('define procedure ('lambda formals . body))
+        ((or ('define (procedure . formals) . body)
+             ('define procedure ('lambda formals . body)))
          ((parse-procedure) doc expr data procedure formals))
         (('define procedure ('case-lambda (formals . body) ...))
          ((parse-case-lambda) doc expr data procedure formals))
