@@ -506,6 +506,24 @@
              syntax
              parameters))))))
 
+  (define (tex-parse-read doc expr data char)
+    (receive (normal-parameters special-parameters)
+      (doc-normal-and-special-parameters doc)
+      (let* ((to (tex-procedure-to special-parameters))
+             (read (substitute-template
+                    tex-read
+                    `((form . ,(texify char))
+                      (to . ,(string-join (map texify to) ", "))))))
+        (let ((parameters (make-tex-parameters normal-parameters)))
+          (lambda ()
+            (write-tex-block
+             doc
+             expr
+             data
+             char
+             read
+             parameters))))))
+
   (define (tex-parse-docexpr document docexpr)
     (parameterize ((parse-directive tex-parse-directive)
                    (parse-procedure tex-parse-procedure)
