@@ -72,6 +72,8 @@
 
   (define parse-read (make-parameter void))
 
+  (define parse-record (make-parameter void))
+
   ;; Somehow, we have to process these preamble-directives before we
   ;; spit the document out; could it be that we have to keep the thing
   ;; in memory before we spit it out?
@@ -139,6 +141,10 @@
              ('set-sharp-read-syntax! char-or-symbol proc)
              ('set-parameterized-read-syntax! char-or-symbol proc))
          ((parse-read) doc expr data char-or-symbol))
+        ((or ('define-record-type type . fields)
+             ('define-record type . fields)
+             ('defstruct type . fields))
+         ((parse-record) doc expr data type))
         ;; Here's where we might make the thing extensible; or maybe
         ;; initially, to give people the opportunity to override the
         ;; above?
@@ -232,6 +238,12 @@
   (define tex-parameter
     "\\texttt{@PARAMETER@} & @DEFINITION@")
 
+  (define tex-parameters
+    "\\item[Parameters]
+\\begin{tabularx}{\\textwidth}[t]{lX}
+@PARAMETERS@
+\\end{tabularx}")
+
   (define tex-parameter-object
     "\\item[Parameter] \\texttt{@PARAMETER@}")
 
@@ -241,8 +253,14 @@
   (define tex-read
     "\\item[Read] \\texttt{@FORM@ $\\to$ @TO@}")
 
-  (define tex-parameters
-    "\\item[Parameters]
+  (define tex-record
+    "\\item[Record] \\texttt{@TYPE@}")
+
+  (define tex-field
+    "\\texttt{@PARAMETER@} & @DEFINITION@")
+
+  (define tex-fields
+    "\\item[Fields]
 \\begin{tabularx}{\\textwidth}[t]{lX}
 @PARAMETERS@
 \\end{tabularx}")
@@ -377,7 +395,9 @@
      `((name-and-formals . ,(texify (cons name formals)))
        (to . ,(string-join (map texify to) ", ")))))
 
-  (define (make-tex-parameters parameters)
+  (define (make-tex-parameters tex-parameter
+                               tex-parameters
+                               parameters)
     (let ((parameters
            (map
             (match-lambda
@@ -404,7 +424,10 @@
       (let ((to (tex-procedure-to special-parameters)))
         (let ((procedure
                (make-tex-procedure tex-procedure name formals to))
-              (parameters (make-tex-parameters normal-parameters)))
+              (parameters (make-tex-parameters
+                           tex-parameter
+                           tex-parameters
+                           normal-parameters)))
           (lambda ()
             (write-tex-block
              doc
@@ -473,7 +496,10 @@
                  tex-case-lambda
                  'procedures
                  procedures)))
-          (let ((parameters (make-tex-parameters normal-parameters)))
+          (let ((parameters (make-tex-parameters
+                             tex-parameter
+                             tex-parameters
+                             normal-parameters)))
             (lambda ()
               (write-tex-block
                doc
@@ -496,7 +522,10 @@
                 (formals normal-parameters)
                 to))
               (parameters
-               (make-tex-parameters normal-parameters)))
+               (make-tex-parameters
+                tex-parameter
+                tex-parameters
+                normal-parameters)))
           (lambda ()
             (write-tex-block
              doc
@@ -514,7 +543,10 @@
                     tex-read
                     `((form . ,(texify char))
                       (to . ,(string-join (map texify to) ", "))))))
-        (let ((parameters (make-tex-parameters normal-parameters)))
+        (let ((parameters (make-tex-parameters
+                           tex-parameter
+                           tex-parameters
+                           normal-parameters)))
           (lambda ()
             (write-tex-block
              doc
@@ -524,6 +556,27 @@
              read
              parameters))))))
 
+  (define (tex-parse-record doc expr data type)
+    (receive (normal-parameters special-parameters)
+      (doc-normal-and-special-parameters doc)
+      (let ((record
+             (substitute-template tex-record
+                                  'type
+                                  type))
+            (fields
+             (make-tex-parameters
+              tex-field
+              tex-fields
+              normal-parameters)))
+        (lambda ()
+          (write-tex-block
+           doc
+           expr
+           data
+           type
+           record
+           fields)))))
+
   (define (tex-parse-docexpr document docexpr)
     (parameterize ((parse-directive tex-parse-directive)
                    (parse-procedure tex-parse-procedure)
@@ -531,7 +584,8 @@
                    (parse-parameter tex-parse-parameter)
                    (parse-scalar tex-parse-scalar)
                    (parse-syntax tex-parse-syntax)
-                   (parse-read tex-parse-read))
+                   (parse-read tex-parse-read)
+                   (parse-record tex-parse-record))
       (parse-docexpr document docexpr)))
 
   (define (tex-parse-docexprs document docexprs)
