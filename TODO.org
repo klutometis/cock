@@ -83,6 +83,11 @@
     (include "cock-parse")
     (import cock-parse)
     (use debug)
+    
+    @(heading "Harro thar!")
+    
+    (+ 2 2)
+    
     (define (procedure a)
       @("Do something."
         (a "Thing to do")
