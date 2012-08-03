@@ -135,11 +135,17 @@
          ((parse-scalar) doc expr data scalar))
         (('define-syntax name . _)
          ((parse-syntax) doc expr data name))
-        (_ values))))
         ((or ('set-read-syntax! char-or-symbol proc)
              ('set-sharp-read-syntax! char-or-symbol proc)
              ('set-parameterized-read-syntax! char-or-symbol proc))
          ((parse-read) doc expr data char-or-symbol))
+        ;; Here's where we might make the thing extensible; or maybe
+        ;; initially, to give people the opportunity to override the
+        ;; above?
+        ;;
+        ;; Don't know what the fuck this is: let's treat it like a
+        ;; directive, for the time being.
+        (_ ((parse-directive) doc null-expression data document)))))
 
   (define substitute-template
     (case-lambda
