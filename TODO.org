@@ -1,4 +1,20 @@
 * TODO Source at end?
+* TODO Types from the Chicken wiki
+  See [[https://wiki.call-cc.org/edit-help][here]]:
+
+  - read
+  - parameter
+  - record
+  - string
+  - class
+  - method
+  - constant
+  - setter
+  - syntax
+  - type
+
+  Records are a really good idea; have to know: =defstruct=,
+  =define-record=, =define-record-type=, &c.
 * TODO Define an intermediate long-hand.
   If this, for instance, is our long-hand:
 
