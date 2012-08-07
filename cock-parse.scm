@@ -1,4 +1,7 @@
 (module cock-parse
+  @("The cock-parse module is responsible for the heavy lifting:
+creating docexprs (see below) from documented sources code; the
+drivers then write docexprs as e.g. LaTeX.")
   (parse-files
    tex-write-docexprs)
   (import alist-lib
