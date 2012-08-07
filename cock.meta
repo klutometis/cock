@@ -2,6 +2,6 @@
  (author "Peter Danenberg")
  (category doc-tools)
  (license "BSD")
- (depends args cock-parse debug usage)
+ (depends args debug usage)
  (test-depends)
  (foreign-depends))
