@@ -3,12 +3,12 @@
 ;;; Cock module
 (setup-shared-extension-module
  'cock
- '(version "0.0.1"))
+ (extension-version "0.0.1"))
 
 ;;; Cock-parse module
 (setup-shared-extension-module
  'cock-parse
- '(version "0.0.1")
+ (extension-version "0.0.1")
  compile-options: '(-X cock))
 
 ;;; Cock executable
