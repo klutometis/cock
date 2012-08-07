@@ -1,7 +1,7 @@
 * TODO Use [[http://wiki.call-cc.org/man/4/Non-standard%2520read%2520syntax#multiline-string-constant-with-embedded-expressions][embedded expressions]] instead of string-templates.
 * DONE =cock-bin=
   CLOSED: [2012-08-06 Mon 17:18]
-  #+BEGIN_SRC scheme :mkdirp yes :tangle bin/cock.scm :shebang #!/usr/bin/env chicken-scheme
+  #+BEGIN_SRC scheme :mkdirp yes :tangle bin/cock-org.scm :shebang #!/usr/bin/env chicken-scheme
     (use alist-lib args cock-parse debug usage)
     
     (define options
