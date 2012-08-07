@@ -81,6 +81,8 @@ drivers then write docexprs as e.g. LaTeX.")
 
   (define parse-record (make-parameter void))
 
+  (define parse-module (make-parameter void))
+
   ;; Somehow, we have to process these preamble-directives before we
   ;; spit the document out; could it be that we have to keep the thing
   ;; in memory before we spit it out?
@@ -152,6 +154,8 @@ drivers then write docexprs as e.g. LaTeX.")
              ('define-record type . fields)
              ('defstruct type . fields))
          ((parse-record) doc expr data type))
+        (('module module exports . body)
+         ((parse-module) doc expr data module exports)) 
         ;; Here's where we might make the thing extensible; or maybe
         ;; initially, to give people the opportunity to override the
         ;; above?
@@ -262,6 +266,20 @@ drivers then write docexprs as e.g. LaTeX.")
 
   (define tex-record
     "\\item[Record] \\texttt{@TYPE@}")
+
+  ;; This could be an e.g. function containing a multiline
+  ;; string-constant with embedded expressions. Sweet!
+  (define tex-module
+    "\\item[Module] \\texttt{@MODULE@}")
+
+  (define tex-export
+    "\\item \\texttt{@EXPORT@}")
+
+  (define tex-exports
+        "\\item[Exports] \\hfill
+\\begin{itemize}
+@EXPORTS@
+\\end{itemize}")
 
   (define tex-field
     "\\texttt{@PARAMETER@} & @DEFINITION@")
@@ -585,6 +603,34 @@ drivers then write docexprs as e.g. LaTeX.")
            record
            fields)))))
 
+  (define (make-tex-exports exports)
+    (let ((exports (map (lambda (export)
+                          (substitute-template
+                           tex-export
+                           'export
+                           (texify export)))
+                        exports)))
+      (substitute-template tex-exports
+                           'exports
+                           (string-join exports "\n"))))
+
+  (define (tex-parse-module doc expr data name exports)
+    (let ((module (substitute-template tex-module
+                                       'module
+                                       name))
+          (exports
+           (make-tex-exports
+            exports)))
+      (lambda ()
+        (parameterize ((tex-write-source? #f))
+          (write-tex-block
+           doc
+           expr
+           data
+           name
+           module
+           exports)))))
+
   (define (tex-parse-docexpr document docexpr)
     (parameterize ((parse-directive tex-parse-directive)
                    (parse-procedure tex-parse-procedure)
@@ -593,7 +639,8 @@ drivers then write docexprs as e.g. LaTeX.")
                    (parse-scalar tex-parse-scalar)
                    (parse-syntax tex-parse-syntax)
                    (parse-read tex-parse-read)
-                   (parse-record tex-parse-record))
+                   (parse-record tex-parse-record)
+                   (parse-module tex-parse-module))
       (parse-docexpr document docexpr)))
 
   (define (tex-parse-docexprs document docexprs)
