@@ -1,3 +1,16 @@
+* TODO Modules
+  The modules themselves have docs? Shit. That's a lot of source-code.
+
+  You know what, though? We can't do this, I believe as long as we
+  rely on the reader: the reader will have finished parsing the thing
+  before we can backtrack and read the contained expressions.
+
+  We'd have to parse the file ourselves, looking for e.g. =doc=-forms;
+  unless, of course, we did a dirty hack and read the embedded
+  expressions in through a string port.
+
+  At that point, though, why aren't we just parsing the god-damn
+  thing?
 * TODO Use [[http://wiki.call-cc.org/man/4/Non-standard%2520read%2520syntax#multiline-string-constant-with-embedded-expressions][embedded expressions]] instead of string-templates.
 * DONE =cock-bin=
   CLOSED: [2012-08-06 Mon 17:18]
