@@ -59,6 +59,9 @@ drivers then write docexprs as e.g. LaTeX.")
               (else expression)))))
 
   (define-record-and-printer docexpr
+    @("Composite documentation and adherent expression"
+      (doc "Documentation for the expression")
+      (expr "Expression surrounding the documentation"))
     doc
     expr)
 
