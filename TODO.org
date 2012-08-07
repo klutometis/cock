@@ -19,6 +19,7 @@
 
   Could we do a table and pluck a description from the docs?
 * TODO Use [[http://wiki.call-cc.org/man/4/Non-standard%2520read%2520syntax#multiline-string-constant-with-embedded-expressions][embedded expressions]] instead of string-templates.
+  Holy shit: is it the case that we don't have to escape backslashes?
 * DONE =cock-bin=
   CLOSED: [2012-08-06 Mon 17:18]
   #+BEGIN_SRC scheme :mkdirp yes :tangle bin/cock-org.scm :shebang #!/usr/bin/env chicken-scheme
