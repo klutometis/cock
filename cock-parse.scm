@@ -354,6 +354,8 @@ drivers then write docexprs as e.g. LaTeX.")
   (define (texify object)
     (string-substitute* (->string object) tex-substitutions #f))
 
+  (define tex-write-source? (make-parameter #t))
+
   (define (write-tex-block doc
                            expr
                            data
@@ -378,13 +380,14 @@ drivers then write docexprs as e.g. LaTeX.")
        (string-join
         (cons item (cons description rest-items))
         "\n"))
-      (write-template
-       tex-source
-       `((source .
-                 ,(with-output-to-string
-                    (lambda ()
-                      (pp expr))))
-         (name . ,name)))))
+      (if (tex-write-source?)
+          (write-template
+           tex-source
+           `((source .
+                     ,(with-output-to-string
+                        (lambda ()
+                          (pp expr))))
+             (name . ,name))))))
 
   (define (tex-parse-directive doc expr data document)
     (let ((directive (car doc))
