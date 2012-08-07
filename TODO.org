@@ -188,6 +188,22 @@
     (tex-write-docexprs (parse-file "test-parse.scm"))
     
   #+END_SRC
+
+  #+BEGIN_SRC makefile :tangle test-parse.mk :shebang #!/usr/bin/unexpand -t 4
+    all: test-parse.scm test-parse.mk
+        CHICKEN_SCHEME_OPTIONS='-X cock' ./test-parse.scm > test-parse.tex && \
+        xelatex -shell-escape test-parse && \
+        xelatex -shell-escape test-parse && \
+        xelatex -shell-escape test-parse && \
+        evince test-parse.pdf
+    
+    test-parse.scm:
+        org-tangle TODO.org
+    
+    test-parse.mk:
+        org-tangle TODO.org
+    
+  #+END_SRC
 * TODO Records
 * TODO Multiple authors (maintainer, &c.)
   [[http://tex.stackexchange.com/questions/9594/adding-more-than-one-author-with-different-affiliation][Using footnotes]] and [[http://tex.stackexchange.com/questions/4805/whats-the-correct-use-of-author-when-multiple-authors][using \texttt{\char`\\ and}]].
