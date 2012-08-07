@@ -1,5 +1,5 @@
 (module cock-parse
-  (parse-file
+  (parse-files
    tex-write-docexprs)
   (import alist-lib
           chicken
@@ -388,7 +388,8 @@
            (write-template
             tex-subheading
             `((title . ,(car arguments)))))) 
-        (else (error "tex-parse-directive -- Unknown directive" directive)))))
+        (else
+         (lambda () (warning "tex-parse-directive -- Unknown directive" directive))))))
 
   (define (make-tex-procedure template name formals to)
     (substitute-template
@@ -598,17 +599,21 @@
                       (tex-parse-docexpr document docexpr))))
       parsed-docexprs))
 
-  (define (parse-file file)
+  ;; Shouldn't we let the caller pass in its own docexprs?
+  (define (parse-files . files)
     (parameterize ((docexprs (make-stack)))
-      (with-input-from-file file
-        (lambda ()
-          (let read-next ((expression (read)))
-            (if (not (eof-object? expression))
-                (begin
-                  (if (current-docexpr)
-                      (docexpr-expr-set! (stack-peek (docexprs)) expression))
-                  (current-docexpr #f)
-                  (read-next (read)))))))
+      (for-each
+          (lambda (file)
+            (with-input-from-file file
+              (lambda ()
+                (let read-next ((expression (read)))
+                  (if (not (eof-object? expression))
+                      (begin
+                        (if (current-docexpr)
+                            (docexpr-expr-set! (stack-peek (docexprs)) expression))
+                        (current-docexpr #f)
+                        (read-next (read))))))))
+        files)
       (docexprs)))
 
   (define (tex-write-docexprs docexprs)
