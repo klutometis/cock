@@ -24,6 +24,31 @@
   documentation for.
 
   Could we do a table and pluck a description from the docs?
+
+  Can't do the string-port hack, by the way; since, by the time we see
+  the expressions, the docs have been stripped. We do have parsed
+  docexprs inside of the module; good luck, however, determining which
+  expressions they're associated with.
+
+  Yeah: to descend into modules, we're going to have to parse the
+  source. =@= has some preëxisting reader that maps it to =#f=, but we
+  can disable that.
+
+  #+BEGIN_SRC scheme
+    (use debug miscmacros ports test)
+    
+    (test
+     '((test) @)
+     (with-input-from-string
+         "@(test)"
+       (lambda ()
+         (do ((expression (read) (read))
+              (expressions '() (cons expression expressions)))
+             ((eof-object? expression) expressions)))))
+  #+END_SRC
+
+  Turns out we don't need to disable it. Real modules have to wait for
+  a /bona fide/ parser.
 * TODO Use [[http://wiki.call-cc.org/man/4/Non-standard%2520read%2520syntax#multiline-string-constant-with-embedded-expressions][embedded expressions]] instead of string-templates.
   Holy shit: is it the case that we don't have to escape backslashes?
 * DONE =cock-bin=
