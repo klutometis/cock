@@ -1,3 +1,9 @@
+* TODO [[http://emacswiki.org/emacs/CompileCommand#toc7][Compile in different directory]].
+* TODO =@example=
+* TODO Doubling up functions
+  See e.g. [[http://api.call-cc.org/doc/posix#def:call-with-output-pipe][call-with-{input,output}-pipe]].
+* DONE [[http://tex.stackexchange.com/questions/11525/generating-pdf-without-any-intermediary-files-stdin-stdout][XeTeX from stdin]]
+  CLOSED: [2012-08-07 Tue 19:14]
 * TODO Modules
   The modules themselves have docs? Shit. That's a lot of source-code.
 
