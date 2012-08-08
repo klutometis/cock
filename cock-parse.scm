@@ -276,7 +276,7 @@ drivers then write docexprs as e.g. LaTeX.")
     "\\item \\texttt{@EXPORT@}")
 
   (define tex-exports
-        "\\item[Exports] \\hfill
+    "\\item[Exports] \\hfill
 \\begin{itemize}
 @EXPORTS@
 \\end{itemize}")
@@ -380,14 +380,14 @@ drivers then write docexprs as e.g. LaTeX.")
        (string-join
         (cons item (cons description rest-items))
         "\n"))
-      (if (tex-write-source?)
-          (write-template
-           tex-source
-           `((source .
-                     ,(with-output-to-string
-                        (lambda ()
-                          (pp expr))))
-             (name . ,name))))))
+      (when (tex-write-source?)
+        (write-template
+         tex-source
+         `((source .
+                   ,(with-output-to-string
+                      (lambda ()
+                        (pp expr))))
+           (name . ,name))))))
 
   (define (tex-parse-directive doc expr data document)
     (let ((directive (car doc))
