@@ -7,6 +7,7 @@
      files
      miscmacros
      posix
+     shell
      usage)
 
 (define options
@@ -42,9 +43,15 @@
                  (lambda () (parse-and-write files)))
                (parse-and-write files)))
           (else
-           (let ((directory (create-temporary-directory)))
+           (let* ((directory (create-temporary-directory))
+                  (file (make-pathname directory "texput.tex")))
+             (with-output-to-file file
+               (lambda () (parse-and-write files)))
              (dotimes (pass 3)
-               (with-output-to-pipe
-                (format "xelatex -shell-escape -output-directory=~a" directory)
-                (lambda () (parse-and-write files))))
-             (when output (file-copy (make-pathname directory "texput.pdf") output #t)))))))
+               (run (xelatex -shell-escape
+                             ,(format "-output-directory=~a" directory)
+                             ,file)))
+             (when output
+               (file-copy (make-pathname directory "texput.pdf")
+                          output
+                          #t)))))))
