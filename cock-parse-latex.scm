@@ -454,6 +454,8 @@
     parsed-docexprs))
 
 (define (tex-write-docexprs docexprs)
+  @("Write the source-derived docexprs as LaTeX."
+    (docexprs "The parsed docexprs"))
   (let* ((document (make-document (make-hash-table) (make-stack)))
          (parsed-docexprs (tex-parse-docexprs document docexprs)))
     (let ((data (document-data document)))
