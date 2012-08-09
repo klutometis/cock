@@ -48,7 +48,57 @@
   #+END_SRC
 
   Turns out we don't need to disable it. Real modules have to wait for
-  a /bona fide/ parser.
+  a /bona fide/ parser. How difficult would that be, btw? Scan for
+  =@=, keeping track of parents; don't descend into
+  lists-following-=@=; ignore symbols. =@= tokenizes itself.
+
+  #+BEGIN_SRC scheme
+    (use debug
+         define-record-and-printer
+         stack)
+    
+    (define-record-and-printer docexpr doc expr)
+    
+    (with-input-from-file "cock-parse.scm"
+      (lambda ()
+        (let read-next ((expression (read))
+                        (parents '())
+                        (docexprs '())
+                        (docexpr? #f))
+          (debug (when (and (pair? expression)
+                            (not (eof-object? expression)))
+                   (car expression))
+                 (if (pair? parents) (car parents))
+                 docexprs
+                 docexpr?)
+          (if (eof-object? expression)
+              docexprs
+              (if docexpr?
+                  (if (pair? expression)
+                      (read-next (cdr expression)
+                                 parents
+                                 (cons (make-docexpr (car parents)
+                                                     expression))
+                                 #f)
+                      (read-next (read)
+                                 parents
+                                 docexprs
+                                 #f))
+                  (if (eq? expression '@)
+                      (read-next (read)
+                                 parents
+                                 docexprs
+                                 #t)
+                      (if (pair? expression)
+                          (read-next (cdr expression)
+                                     (cons expression parents)
+                                     docexprs
+                                     #f)
+                          (read-next (read)
+                                     parents
+                                     docexprs
+                                     #f))))))))
+  #+END_SRC
 * TODO Use [[http://wiki.call-cc.org/man/4/Non-standard%2520read%2520syntax#multiline-string-constant-with-embedded-expressions][embedded expressions]] instead of string-templates.
   Holy shit: is it the case that we don't have to escape backslashes?
 * DONE =cock-bin=
