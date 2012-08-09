@@ -23,4 +23,7 @@ drivers then write docexprs as e.g. LaTeX.")
        srfi-69
        stack)
 
-  (import-for-syntax matchable))
+  (import-for-syntax matchable)
+
+  (include "cock-parse-core.scm")
+  (include "cock-parse-latex.scm"))
