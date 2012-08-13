@@ -1,3 +1,24 @@
+* TODO =svnwiki= driver
+  I've started a [[https://wiki.call-cc.org/users/peter-danenberg][sandbox]].
+* TODO Markup
+  Instead of using strings (which will be given verbatim), can't we
+  have some sort of ad-hoc s-expression-based markup? E.g.:
+
+  #+BEGIN_SRC scheme
+    @(This is (em some) (_ markup).
+      (arg "Argument"))
+  #+END_SRC
+
+  Meh; we have no good way to differentiate argument lists. Fuck it:
+  let's go [[http://wiki.call-cc.org/eggref/4/lowdown][markdown]].
+
+  (See the defunct [[https://wiki.call-cc.org/eggref/4/multidoc][multidoc]], by the way.)
+
+  It's going to be a pain-in-the-ass to distinguish between intra- and
+  inter-document links, isn't it? How I wish I could defer to the
+  renderer.
+* TODO Keyword-arguments to procedures
+  See [[http://api.call-cc.org/doc/spiffy/start-server][start-server]].
 * TODO Long signature get cut off in =case-lambda=.
 * TODO URLs, bold, monospace, &c.
 * TODO =@NB=
