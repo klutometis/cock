@@ -277,8 +277,8 @@
    (string-join (map texify descriptions) "\n\n")))
 
 (define (scalar-procedure? normal-parameters special-parameters)
-  (and (not (null? normal-parameters))
-       (alist-ref/default special-parameters '@to #f)))
+  (or (not (null? normal-parameters))
+      (alist-ref/default special-parameters '@to #f)))
 
 (define (tex-parse-scalar doc expr data name)
   (receive (normal-parameters special-parameters)
