@@ -1,3 +1,15 @@
+* TODO Syntax parameters
+  It's a little more complicated: have to be able to specify optional
+  parameters, &c.
+* TODO Parameter-defaults
+  E.g.:
+
+  #+BEGIN_SRC scheme
+    (arg "Some argument" default: 'china)
+  #+END_SRC
+
+  Useful for e.g. parameters and case lambda. (We already do this for
+  parameters, thank the gods.)
 * TODO Figure out how to doc from =.setup=.
 * TODO [[http://emacswiki.org/emacs/CompileCommand#toc7][Compile in different directory]].
 * TODO =@example=
