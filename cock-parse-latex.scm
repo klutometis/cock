@@ -276,19 +276,31 @@
    'description
    (string-join (map texify descriptions) "\n\n")))
 
+(define (scalar-procedure? normal-parameters special-parameters)
+  (and (not (null? normal-parameters))
+       (alist-ref/default special-parameters '@to #f)))
+
 (define (tex-parse-scalar doc expr data name)
-  (let ((scalar
-         (substitute-template
-          tex-scalar
-          'scalar
-          (last expr))))
-    (lambda ()
-      (write-tex-block
-       doc
-       expr
-       data
-       name
-       scalar))))
+  (receive (normal-parameters special-parameters)
+    (doc-normal-and-special-parameters doc)
+    (if (scalar-procedure? normal-parameters special-parameters)
+        (tex-parse-procedure doc
+                             expr
+                             data
+                             name
+                             (map car normal-parameters))
+        (let ((scalar
+               (substitute-template
+                tex-scalar
+                'scalar
+                (last expr))))
+          (lambda ()
+            (write-tex-block
+             doc
+             expr
+             data
+             name
+             scalar))))))
 
 (define (tex-parse-parameter doc expr data name init)
   (let ((parameter-object
