@@ -20,7 +20,6 @@ drivers then write docexprs as e.g. LaTeX.")
   (use alist-lib
        cock
        debug
-       define-record-and-printer
        lolevel
        matchable
        regex
