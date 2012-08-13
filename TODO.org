@@ -13,6 +13,8 @@
 * TODO Figure out how to doc from =.setup=.
 * TODO [[http://emacswiki.org/emacs/CompileCommand#toc7][Compile in different directory]].
 * TODO =@example=
+  Everything should be able to take examples, even modules; examples
+  should be as fundamental as source-code.
 * TODO Doubling up functions
   See e.g. [[http://api.call-cc.org/doc/posix#def:call-with-output-pipe][call-with-{input,output}-pipe]].
 * DONE [[http://tex.stackexchange.com/questions/11525/generating-pdf-without-any-intermediary-files-stdin-stdout][XeTeX from stdin]]
