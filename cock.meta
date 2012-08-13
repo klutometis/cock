@@ -2,6 +2,14 @@
  (author "Peter Danenberg")
  (category doc-tools)
  (license "BSD")
- (depends args debug usage)
+ (depends alist-lib
+          args
+          debug
+          matchable
+          miscmacros
+          regex
+          shell
+          stack
+          usage)
  (test-depends)
  (foreign-depends))
