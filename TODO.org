@@ -1,3 +1,6 @@
+* TODO Shoot: even scalars can have parameters.
+  This happens when we simply rename functions. Have to catch this
+  case.
 * TODO Syntax parameters
   It's a little more complicated: have to be able to specify optional
   parameters, &c.
