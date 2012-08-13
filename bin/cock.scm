@@ -29,6 +29,12 @@
 (define (option options option)
   (alist-ref/default options option #f))
 
+(define (with-working-directory directory thunk)
+  (let ((original-directory (current-directory)))
+    (dynamic-wind (lambda () (current-directory directory))
+        thunk
+        (lambda () (current-directory original-directory)))))
+
 (receive (options files)
   (args:parse (command-line-arguments) (options))
   ;; Let's abstract these.
@@ -43,15 +49,22 @@
                  (lambda () (parse-and-write files)))
                (parse-and-write files)))
           (else
-           (let* ((directory (create-temporary-directory))
-                  (file (make-pathname directory "texput.tex")))
-             (with-output-to-file file
-               (lambda () (parse-and-write files)))
-             (dotimes (pass 3)
-               (run (xelatex -shell-escape
-                             ,(format "-output-directory=~a" directory)
-                             ,file)))
+           (let ((output-directory (create-temporary-directory))
+                 (current-directory (current-directory)))
+             (with-working-directory output-directory
+               (lambda ()
+                 (dotimes (pass 3)
+                   (with-output-to-pipe
+                    (format "xelatex -shell-escape -output-directory=~a"
+                            output-directory)
+                    (lambda ()
+                      (parse-and-write
+                       (map (lambda (file)
+                              (if (absolute-pathname? file)
+                                  file
+                                  (make-pathname current-directory file)))
+                            files)))))))
              (when output
-               (file-copy (make-pathname directory "texput.pdf")
+               (file-copy (make-pathname output-directory "texput.pdf")
                           output
                           #t)))))))
