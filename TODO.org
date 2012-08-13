@@ -1,3 +1,4 @@
+* TODO Figure out how to doc from =.setup=.
 * TODO [[http://emacswiki.org/emacs/CompileCommand#toc7][Compile in different directory]].
 * TODO =@example=
 * TODO Doubling up functions
