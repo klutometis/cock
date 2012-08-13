@@ -1,3 +1,8 @@
+@(title "Cock: Inline Docs for Chicken Scheme")
+@(author "Peter Danenberg")
+@(email "pcd@roxygen.org")
+@(heading "Cock-parse")
+
 (module cock-parse
   @("The cock-parse module is responsible for the heavy lifting:
 creating docexprs (see below) from documented sources code; the
