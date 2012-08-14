@@ -1,3 +1,7 @@
+* TODO =pre-post-order=
+  A better mechanism would be to transform the code into some
+  intermediate S-expression representation; that way, each driver is
+  simply a ruleset.
 * TODO =svnwiki= driver
   I've started a [[https://wiki.call-cc.org/users/peter-danenberg][sandbox]].
 * TODO Markup
