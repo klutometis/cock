@@ -8,7 +8,8 @@
 creating docexprs (see below) from documented sources code; the
 drivers then write docexprs as e.g. LaTeX.")
   (parse-files
-   tex-write-docexprs)
+   tex-write-docexprs
+   wiki-write-docexprs)
   (import alist-lib
           chicken
           data-structures
@@ -30,4 +31,5 @@ drivers then write docexprs as e.g. LaTeX.")
   (import-for-syntax matchable)
 
   (include "cock-parse-core.scm")
-  (include "cock-parse-latex.scm"))
+  (include "cock-parse-latex.scm")
+  (include "cock-parse-wiki.scm"))
