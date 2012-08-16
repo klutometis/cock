@@ -1,3 +1,5 @@
+* TODO Footer: created by =cock=
+* TODO TOC-header on wiki
 * TODO =pre-post-order=
   A better mechanism would be to transform the code into some
   intermediate S-expression representation; that way, each driver is
