@@ -153,6 +153,20 @@
   #+END_SRC
 * TODO Use [[http://wiki.call-cc.org/man/4/Non-standard%2520read%2520syntax#multiline-string-constant-with-embedded-expressions][embedded expressions]] instead of string-templates.
   Holy shit: is it the case that we don't have to escape backslashes?
+
+  #+BEGIN_SRC scheme
+    (use debug)
+    
+    (define (test-template test)
+      #<#EOF
+      #{test}
+    EOF
+    )
+    
+    (debug (test-template "harro"))
+  #+END_SRC
+
+  Hmm: kind of ugly, though; that's ok, isn't it?
 * DONE =cock-bin=
   CLOSED: [2012-08-06 Mon 17:18]
   #+BEGIN_SRC scheme :mkdirp yes :tangle bin/cock-org.scm :shebang #!/usr/bin/env chicken-scheme
