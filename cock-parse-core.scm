@@ -44,23 +44,27 @@
   doc
   expr)
 
-(define parse-directive (make-parameter void))
+(define (parse-noop . args) (lambda () void))
 
-(define parse-procedure (make-parameter void))
+;;; Because it's apparent that latex and wiki share a lot of code,
+;;; these should actually do something.
+(define parse-directive (make-parameter parse-noop))
 
-(define parse-scalar (make-parameter void))
+(define parse-procedure (make-parameter parse-noop))
 
-(define parse-parameter (make-parameter void))
+(define parse-scalar (make-parameter parse-noop))
 
-(define parse-case-lambda (make-parameter void))
+(define parse-parameter (make-parameter parse-noop))
 
-(define parse-syntax (make-parameter void))
+(define parse-case-lambda (make-parameter parse-noop))
 
-(define parse-read (make-parameter void))
+(define parse-syntax (make-parameter parse-noop))
 
-(define parse-record (make-parameter void))
+(define parse-read (make-parameter parse-noop))
 
-(define parse-module (make-parameter void))
+(define parse-record (make-parameter parse-noop))
+
+(define parse-module (make-parameter parse-noop))
 
 ;;; Somehow, we have to process these preamble-directives before we
 ;;; spit the document out; could it be that we have to keep the thing
