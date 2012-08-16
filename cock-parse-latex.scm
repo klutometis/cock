@@ -212,7 +212,14 @@
          (hash-table-set! data 'heading-level 2)
          (write-template
           tex-subheading
-          `((title . ,(car arguments)))))) 
+          `((title . ,(car arguments))))))
+      ((subsubheading)
+       (lambda ()
+         (hash-table-set! data 'heading-level 3)
+         ;; Don't actually have a tex-subsubsheading.
+         (write-template
+          tex-subheading
+          `((title . ,(car arguments))))))
       (else
        (lambda () (warning "tex-parse-directive -- Unknown directive" directive))))))
 
@@ -242,6 +249,7 @@
          ;; Already texified above.
          (string-join parameters "\\\\\n")))))
 
+;;; Generalize this.
 (define (tex-procedure-to special-parameters)
   (alist-ref/default special-parameters '@to '("unspecified")))
 
@@ -268,7 +276,9 @@
   (match heading-level
     (0 tex-heading)
     (1 tex-subheading)
-    (2 tex-subsubheading)))
+    (2 tex-subsubheading)
+    ;; Don't have a subsubsubheading.
+    (3 tex-subsubheading)))
 
 (define (tex-make-description descriptions)
   (substitute-template
