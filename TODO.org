@@ -1,5 +1,8 @@
 * TODO Footer: created by =cock=
 * TODO TOC-header on wiki
+* TODO =parse-procedure=, &c. should be more than stubs.
+  There's a lot of boilerplate work to be done there that we could
+  specialize for e.g. wiki and latex.
 * TODO =pre-post-order=
   A better mechanism would be to transform the code into some
   intermediate S-expression representation; that way, each driver is
