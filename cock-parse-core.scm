@@ -4,6 +4,12 @@
 
 (define docexprs (make-parameter (make-stack)))
 
+(define-syntax thunk
+  (lambda (expression rename compare)
+    (let ((body (cdr expression))
+          (%lambda (rename 'lambda)))
+      `(,%lambda () ,@body))))
+
 (define-syntax define-record-and-printer
   (lambda (expression rename compare)
     (match expression
