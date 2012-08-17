@@ -1,3 +1,15 @@
+* DONE =thunk=-form
+  CLOSED: [2012-08-17 Fri 14:05]
+  #+BEGIN_SRC scheme
+    (define-syntax thunk
+      (lambda (expression rename compare)
+        (let ((body (cdr expression))
+              (%lambda (rename 'lambda)))
+          `(,%lambda () ,@body))))
+    
+    (with-output-to-string (thunk (display 2)))
+    
+  #+END_SRC
 * TODO Footer: created by =cock=
 * TODO TOC-header on wiki
 * TODO =parse-procedure=, &c. should be more than stubs.
