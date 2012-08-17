@@ -190,6 +190,15 @@
            (filter (compose special-parameter? car) parameters)))
       (values normal-parameters special-parameters))))
 
+;;; Generalize this.
+(define (procedure-to special-parameters)
+  (alist-ref/default special-parameters '@to '("unspecified")))
+
+(define (scalar-procedure? normal-parameters special-parameters)
+  (or (not (null? normal-parameters))
+      (alist-ref/default special-parameters '@to #f)))
+
+(define (formals parameters) (map car parameters))
 
 ;;; Shouldn't we let the caller pass in its own docexprs?
 (define (parse-files . files)
