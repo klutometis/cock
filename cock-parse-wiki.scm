@@ -39,6 +39,12 @@ EOF
 EOF
 )
 
+(define (wiki-syntax signature to)
+  #<#EOF
+<syntax>#{signature} → #{to}</syntax>
+EOF
+)
+
 ;;; What happens with colons in the definition?
 (define (wiki-parameter parameter definition)
   #<#EOF
@@ -196,13 +202,30 @@ EOF
             name
             parameter))))
 
+
+(define (wiki-parse-syntax doc expr data name)
+  (receive (normal-parameters special-parameters)
+    (doc-normal-and-special-parameters doc)
+    (let ((to (procedure-to special-parameters)))
+      (let ((syntax (make-wiki-procedure wiki-syntax
+                                         name
+                                         (formals normal-parameters)
+                                         to))
+            (parameters (make-wiki-parameters normal-parameters)))
+        (thunk (write-wiki-block doc
+                                 expr
+                                 data
+                                 name
+                                 syntax
+                                 parameters))))))
+
 (define (wiki-parse-docexpr document docexpr)
   (parameterize ((parse-directive wiki-parse-directive)
                  (parse-procedure wiki-parse-procedure)
                  (parse-case-lambda wiki-parse-case-lambda)
                  (parse-parameter wiki-parse-parameter)
                  ;; (parse-scalar wiki-parse-scalar)
-                 ;; (parse-syntax wiki-parse-syntax)
+                 (parse-syntax wiki-parse-syntax)
                  ;; (parse-read wiki-parse-read)
                  ;; (parse-record wiki-parse-record)
                  ;; (parse-module wiki-parse-module)
