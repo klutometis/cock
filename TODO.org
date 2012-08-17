@@ -10,8 +10,10 @@
     (with-output-to-string (thunk (display 2)))
     
   #+END_SRC
-* TODO Footer: created by =cock=
-* TODO TOC-header on wiki
+* DONE Footer: created by =cock=
+  CLOSED: [2012-08-17 Fri 14:06]
+* DONE TOC-header on wiki
+  CLOSED: [2012-08-17 Fri 14:06]
 * TODO =parse-procedure=, &c. should be more than stubs.
   There's a lot of boilerplate work to be done there that we could
   specialize for e.g. wiki and latex.
@@ -26,7 +28,8 @@
     (use cock-parse debug stack)
     
     (let ((docexprs
-           (parse-files "~/prg/scm/aima-chicken/aima-core.scm")))
+           (parse-files ;; "~/prg/scm/aima-chicken/aima-core.scm"
+                        "test-parse.scm")))
       (wiki-write-docexprs docexprs))
     
   #+END_SRC
@@ -50,15 +53,20 @@
 * TODO Keyword-arguments to procedures
   See [[http://api.call-cc.org/doc/spiffy/start-server][start-server]].
 * TODO Long signature get cut off in =case-lambda=.
-* TODO URLs, bold, monospace, &c.
+* CANCELED URLs, bold, monospace, &c.
+  CLOSED: [2012-08-17 Fri 14:07]
+  - CLOSING NOTE [2012-08-17 Fri 14:07] \\
+    See [[Markup]].
 * TODO =@NB=
 * TODO =@TODO=
 * TODO References
-* TODO Style
+* DONE Style
+  CLOSED: [2012-08-17 Fri 14:07]
   Keep e.g. =@to= to one word (the type?), something more descriptive
   in the procedure description.
 * TODO Inherit unspecified parameters from other procedures.
-* TODO Shoot: even scalars can have parameters.
+* DONE Shoot: even scalars can have parameters.
+  CLOSED: [2012-08-17 Fri 14:07]
   This happens when we simply rename functions. Have to catch this
   case.
 * TODO Syntax parameters
@@ -74,7 +82,8 @@
   Useful for e.g. parameters and case lambda. (We already do this for
   parameters, thank the gods.)
 * TODO Figure out how to doc from =.setup=.
-* TODO [[http://emacswiki.org/emacs/CompileCommand#toc7][Compile in different directory]].
+* DONE [[http://emacswiki.org/emacs/CompileCommand#toc7][Compile in different directory]].
+  CLOSED: [2012-08-17 Fri 14:07]
 * TODO =@example=
   Everything should be able to take examples, even modules; examples
   should be as fundamental as source-code.
@@ -177,7 +186,10 @@
                                      docexprs
                                      #f))))))))
   #+END_SRC
-* TODO Use [[http://wiki.call-cc.org/man/4/Non-standard%2520read%2520syntax#multiline-string-constant-with-embedded-expressions][embedded expressions]] instead of string-templates.
+* DONE Use [[http://wiki.call-cc.org/man/4/Non-standard%2520read%2520syntax#multiline-string-constant-with-embedded-expressions][embedded expressions]] instead of string-templates.
+  CLOSED: [2012-08-17 Fri 14:08]
+  - CLOSING NOTE [2012-08-17 Fri 14:08] \\
+    Messy
   Holy shit: is it the case that we don't have to escape backslashes?
 
   #+BEGIN_SRC scheme
@@ -218,7 +230,8 @@
 * TODO Line-numbers are pretty meaningless.
   Not only do they not correspond to the file, they're even
   inconsistent within the function; since they go through =pp=.
-* TODO Binary
+* DONE Binary
+  CLOSED: [2012-08-17 Fri 14:08]
   Initially, let's parse individual files; but let's quickly follow up
   with something for eggs that reads name, email, &c. from there:
   possibly converts =includes= into sections.
@@ -233,7 +246,8 @@
   If only we could depend upon Chicken to do the stitching.
 * TODO Classes?
   Maybe this can be an extension.
-* TODO Source at end?
+* DONE Source at end?
+  CLOSED: [2012-08-17 Fri 14:08]
 * TODO Types from the Chicken wiki
   See [[https://wiki.call-cc.org/edit-help][here]]:
 
@@ -340,6 +354,14 @@
     @(heading "Harro thar!")
     
     (+ 2 2)
+    
+    (define x
+      @("x is often the neighbor of y.")
+      2)
+    
+    (define y
+      @("y is often the neighbor of x")
+      (make-parameter 3))
     
     (define (procedure a b)
       @("Do something."
