@@ -129,11 +129,14 @@ EOF
 (define (make-wiki-procedure template name formals to)
   (template (cons name formals) (string-join to ", ")))
 
+(define (purge-newlines string)
+  (irregex-replace/all "\n" string " "))
+
 (define (make-wiki-parameters parameters)
   (let ((parameters
          (map
           (match-lambda ((parameter definition)
-                    (wiki-parameter parameter definition)))
+                    (wiki-parameter parameter (purge-newlines definition))))
           parameters)))
     (string-join parameters "\n")))
 
