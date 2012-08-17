@@ -1,3 +1,6 @@
+* TODO Changelog
+* TODO Repository
+* TODO License
 * DONE =thunk=-form
   CLOSED: [2012-08-17 Fri 14:05]
   #+BEGIN_SRC scheme
