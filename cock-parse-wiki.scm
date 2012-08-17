@@ -57,6 +57,12 @@ EOF
 EOF
 )
 
+(define (wiki-record type)
+  #<#EOF
+<record>#{type}</record>
+EOF
+)
+
 ;;; What happens with colons in the definition?
 (define (wiki-parameter parameter definition)
   #<#EOF
