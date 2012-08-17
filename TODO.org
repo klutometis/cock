@@ -353,6 +353,10 @@
     @(title "Test parse")
     @(heading "Harro thar!")
     
+    (module just-a-little-module
+      @("Little modules do work sometimes.")
+      (x y procedure tex-procedure-to))
+    
     (+ 2 2)
     
     (define x
