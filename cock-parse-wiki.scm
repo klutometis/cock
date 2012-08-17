@@ -51,6 +51,12 @@ EOF
 EOF
 )
 
+(define (wiki-record type)
+  #<#EOF
+<record>#{type}</record>
+EOF
+)
+
 ;;; What happens with colons in the definition?
 (define (wiki-parameter parameter definition)
   #<#EOF
@@ -260,6 +266,18 @@ EOF
                                  read
                                  parameters))))))
 
+(define (wiki-parse-record doc expr data type)
+  (receive (normal-parameters special-parameters)
+    (doc-normal-and-special-parameters doc)
+    (let ((record (wiki-record type))
+          (fields (make-wiki-parameters normal-parameters)))
+      (thunk (write-wiki-block doc
+                               expr
+                               data
+                               type
+                               record
+                               fields)))))
+
 (define (wiki-parse-docexpr document docexpr)
   (parameterize ((parse-directive wiki-parse-directive)
                  (parse-procedure wiki-parse-procedure)
@@ -267,8 +285,8 @@ EOF
                  (parse-parameter wiki-parse-parameter)
                  (parse-scalar wiki-parse-scalar)
                  (parse-syntax wiki-parse-syntax)
-                 ;; (parse-record wiki-parse-record)
                  (parse-read wiki-parse-read)
+                 (parse-record wiki-parse-record)
                  ;; (parse-module wiki-parse-module)
                  )
     (parse-docexpr document docexpr)))
