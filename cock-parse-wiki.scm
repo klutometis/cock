@@ -121,7 +121,7 @@ EOF
            0)))
         (description (wiki-make-description (doc-descriptions doc))))
     (display (heading (wiki-monospace name)))
-    (string-join (cons item (cons description rest-items)) "\n")
+    (display (string-join (cons item (cons description rest-items)) "\n" 'suffix))
     (when (wiki-write-source?)
       (display (wiki-source (with-output-to-string (lambda () (pp expr))))))))
 
