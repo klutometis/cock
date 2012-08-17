@@ -152,8 +152,6 @@
 (define (texify object)
   (string-substitute* (->string object) tex-substitutions #f))
 
-(define tex-write-source? (make-parameter #t))
-
 (define (write-tex-block doc
                          expr
                          data
@@ -178,7 +176,7 @@
      (string-join
       (cons item (cons description rest-items))
       "\n"))
-    (when (tex-write-source?)
+    (when (write-source?)
       (write-template
        tex-source
        `((source .
@@ -435,7 +433,7 @@
          (make-tex-exports
           exports)))
     (lambda ()
-      (parameterize ((tex-write-source? #f))
+      (parameterize ((write-source? #f))
         (write-tex-block
          doc
          expr

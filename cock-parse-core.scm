@@ -200,6 +200,8 @@
 
 (define (formals parameters) (map car parameters))
 
+(define write-source? (make-parameter #t))
+
 ;;; Shouldn't we let the caller pass in its own docexprs?
 (define (parse-files . files)
   @("Parse files into docexprs."

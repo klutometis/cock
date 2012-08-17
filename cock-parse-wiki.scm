@@ -132,8 +132,6 @@ EOF
     (2 wiki-subsubsubtitle)
     (3 wiki-subsubsubtitle)))
 
-(define wiki-write-source? (make-parameter #t))
-
 (define (wiki-make-description descriptions)
   (string-join descriptions "\n\n"))
 
@@ -152,7 +150,7 @@ EOF
         (description (wiki-make-description (doc-descriptions doc))))
     (display (heading (wiki-monospace name)))
     (display (string-join (cons item (cons description rest-items)) "\n" 'suffix))
-    (when (wiki-write-source?)
+    (when (write-source?)
       (display (wiki-source (with-output-to-string (lambda () (pp expr))))))))
 
 ;;; Generalize this.
