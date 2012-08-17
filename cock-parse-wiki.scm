@@ -97,9 +97,9 @@ EOF
 
 (define (wiki-make-heading heading-level)
   (match heading-level
-    (0 wiki-title)
-    (1 wiki-subtitle)
-    (2 wiki-subsubtitle)
+    (0 wiki-subtitle)
+    (1 wiki-subsubtitle)
+    (2 wiki-subsubsubtitle)
     (3 wiki-subsubsubtitle)))
 
 (define wiki-write-source? (make-parameter #t))
