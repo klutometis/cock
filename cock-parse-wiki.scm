@@ -72,7 +72,7 @@ Documented by [[/egg/cock|cock]].
 EOF
 )
 
-(define (wiki-parameter name init)
+(define (wiki-parameter-object name init)
   #<#EOF
 <parameter>#{name} → #{init}</parameter>
 EOF
