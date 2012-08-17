@@ -13,7 +13,8 @@
   #+BEGIN_SRC scheme :tangle test-wiki.scm :shebang #!/usr/bin/env chicken-scheme
     (use cock-parse debug stack)
     
-    (let ((docexprs (parse-files "test-parse.scm")))
+    (let ((docexprs
+           (parse-files "~/prg/scm/aima-chicken/aima-core.scm")))
       (wiki-write-docexprs docexprs))
     
   #+END_SRC
@@ -328,9 +329,10 @@
     
     (+ 2 2)
     
-    (define (procedure a)
+    (define (procedure a b)
       @("Do something."
         (a "Thing to do")
+        (b "Some adjunct thing")
         (@to "Thing done"))
       (void))
     
