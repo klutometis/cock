@@ -78,6 +78,12 @@ EOF
 EOF
 )
 
+(define (wiki-scalar name definition)
+  #<#EOF
+<constant>#{name} → #{definition}</constant>
+EOF
+)
+
 ;;; Needs to be generalized.
 (define (wiki-parse-directive doc expr data document)
   (let ((directive (car doc))
@@ -202,6 +208,22 @@ EOF
             name
             parameter))))
 
+(define (wiki-parse-scalar doc expr data name)
+  (receive (normal-parameters special-parameters)
+    (doc-normal-and-special-parameters doc)
+    (if (scalar-procedure? normal-parameters special-parameters)
+        (wiki-parse-procedure doc
+                              expr
+                              data
+                              name
+                              (map car normal-parameters))
+        (let* ((definition (last expr))
+               (scalar (wiki-scalar name definition)))
+          (thunk (write-wiki-block doc
+                                   expr
+                                   data
+                                   name
+                                   scalar))))))
 
 (define (wiki-parse-syntax doc expr data name)
   (receive (normal-parameters special-parameters)
@@ -224,7 +246,7 @@ EOF
                  (parse-procedure wiki-parse-procedure)
                  (parse-case-lambda wiki-parse-case-lambda)
                  (parse-parameter wiki-parse-parameter)
-                 ;; (parse-scalar wiki-parse-scalar)
+                 (parse-scalar wiki-parse-scalar)
                  (parse-syntax wiki-parse-syntax)
                  ;; (parse-read wiki-parse-read)
                  ;; (parse-record wiki-parse-record)
