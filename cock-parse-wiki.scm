@@ -66,6 +66,12 @@ Documented by [[/egg/cock|cock]].
 EOF
 )
 
+(define (wiki-parameter name init)
+  #<#EOF
+<parameter>#{name} → #{init}</parameter>
+EOF
+)
+
 ;;; Needs to be generalized.
 (define (wiki-parse-directive doc expr data document)
   (let ((directive (car doc))
@@ -180,12 +186,21 @@ EOF
            name
            procedures
            parameters))))))
+
+(define (wiki-parse-parameter doc expr data name init)
+  (let ((parameter (wiki-parameter name init)))
+    (thunk (write-wiki-block
+            doc
+            expr
+            data
+            name
+            parameter))))
+
 (define (wiki-parse-docexpr document docexpr)
   (parameterize ((parse-directive wiki-parse-directive)
                  (parse-procedure wiki-parse-procedure)
-                 ;; (parse-case-lambda wiki-parse-case-lambda)
-                 ;; (parse-parameter wiki-parse-parameter)
                  (parse-case-lambda wiki-parse-case-lambda)
+                 (parse-parameter wiki-parse-parameter)
                  ;; (parse-scalar wiki-parse-scalar)
                  ;; (parse-syntax wiki-parse-syntax)
                  ;; (parse-read wiki-parse-read)
