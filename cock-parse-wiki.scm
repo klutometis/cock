@@ -53,6 +53,20 @@ EOF
 EOF
 )
 
+(define (wiki-preamble)
+  #<#EOF
+[[toc:]]
+
+EOF
+)
+
+(define (wiki-postamble)
+  #<#EOF
+Documented by [[/egg/cock|cock]].
+
+EOF
+)
+
 ;;; Needs to be generalized.
 (define (wiki-parse-directive doc expr data document)
   (let ((directive (car doc))

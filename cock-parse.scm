@@ -24,6 +24,7 @@ drivers then write docexprs as e.g. LaTeX.")
   (use alist-lib
        cock
        debug
+       irregex
        lolevel
        matchable
        regex
