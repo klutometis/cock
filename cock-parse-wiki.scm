@@ -185,4 +185,6 @@ EOF
     (docexprs "The parsed docexprs"))
   (let* ((document (make-document (make-hash-table) (make-stack)))
          (parsed-docexprs (wiki-parse-docexprs document docexprs)))
-    (stack-for-each parsed-docexprs (lambda (docexpr) (docexpr)))))
+    (display (wiki-preamble))
+    (stack-for-each parsed-docexprs (lambda (docexpr) (docexpr)))
+    (display (wiki-postamble))))
