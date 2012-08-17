@@ -3,6 +3,7 @@
 (use alist-lib
      args
      cock-parse
+     data-structures
      debug
      files
      miscmacros
@@ -15,7 +16,8 @@
    (list (args:make-option (h ? help) #:none "Help" (set! arg #t))
          (args:make-option (l latex) #:none "Output to LaTeX" (set! arg #t))
          (args:make-option (o output) (required: "FILE") "Output to FILE")
-         (args:make-option (p pdf) #:none "Output to PDF [Default]" (set! arg #t)))))
+         (args:make-option (p pdf) #:none "Output to PDF" (set! arg #t))
+         (args:make-option (w wiki) #:none "Output to wiki [default]" (set! arg #t)))))
 
 (define usage
   (make-usage
@@ -23,8 +25,8 @@
      (format #t "Usage: ~a [OPTIONS]... FILE...~%" program)
      (print (args:usage (options))))))
 
-(define (parse-and-write files)
-  (tex-write-docexprs (apply parse-files files)))
+(define (parse-and-write write-docexprs files)
+  (write-docexprs (apply parse-files files)))
 
 (define (option options option)
   (alist-ref/default options option #f))
@@ -38,17 +40,18 @@
 (receive (options files)
   (args:parse (command-line-arguments) (options))
   ;; Let's abstract these.
-  (let ((help (option options 'help))
-        (latex (option options 'latex))
-        (output (option options 'output)))
-    (cond (help (usage))
+  (let ((help? (option options 'help))
+        (latex? (option options 'latex))
+        (output (option options 'output))
+        (pdf? (option options 'pdf)))
+    (cond (help? (usage))
           ((null? files) (usage 1))
-          (latex
+          (latex?
            (if output
                (with-output-to-file output
-                 (lambda () (parse-and-write files)))
-               (parse-and-write files)))
-          (else
+                 (lambda () (parse-and-write tex-write-docexprs files)))
+               (parse-and-write tex-write-docexprs files)))
+          (pdf?
            (let ((output-directory (create-temporary-directory))
                  (current-directory (current-directory)))
              (with-working-directory output-directory
@@ -59,6 +62,7 @@
                             output-directory)
                     (lambda ()
                       (parse-and-write
+                       tex-write-docexprs
                        (map (lambda (file)
                               (if (absolute-pathname? file)
                                   file
@@ -67,4 +71,9 @@
              (when output
                (file-copy (make-pathname output-directory "texput.pdf")
                           output
-                          #t)))))))
+                          #t))))
+          (else
+           (if output
+               (with-output-to-file output
+                 (lambda () (parse-and-write wiki-write-docexprs files)))
+               (parse-and-write wiki-write-docexprs files))))))
