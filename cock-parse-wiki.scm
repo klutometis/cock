@@ -161,7 +161,7 @@ EOF
 (define (wiki-parse-procedure doc expr data name formals)
   (receive (normal-parameters special-parameters)
     (doc-normal-and-special-parameters doc)
-    (let ((to (tex-procedure-to special-parameters)))
+    (let ((to (procedure-to special-parameters)))
       (let ((procedure
              (make-wiki-procedure wiki-procedure name formals to))
             (parameters
@@ -177,7 +177,7 @@ EOF
 (define (wiki-parse-case-lambda doc expr data name formals+)
   (receive (normal-parameters special-parameters)
     (doc-normal-and-special-parameters doc)
-    (let ((to (tex-procedure-to special-parameters)))
+    (let ((to (procedure-to special-parameters)))
       (let ((procedures
              (string-join
               (map (lambda (formals)
