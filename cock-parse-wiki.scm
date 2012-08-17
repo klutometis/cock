@@ -200,7 +200,7 @@ EOF
            parameters))))))
 
 (define (wiki-parse-parameter doc expr data name init)
-  (let ((parameter (wiki-parameter name init)))
+  (let ((parameter (wiki-parameter-object name init)))
     (thunk (write-wiki-block
             doc
             expr
