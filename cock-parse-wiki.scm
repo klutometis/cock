@@ -36,7 +36,6 @@ EOF
 (define (wiki-procedure signature to)
   #<#EOF
 <procedure>#{signature} → #{to}</procedure>
-
 EOF
 )
 
