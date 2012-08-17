@@ -8,10 +8,7 @@
 creating docexprs (see below) from documented sources code; the
 drivers then write docexprs as e.g. LaTeX.")
   (parse-files
-   make-document
-   tex-parse-docexprs
    tex-write-docexprs
-   wiki-parse-docexprs
    wiki-write-docexprs)
   (import alist-lib
           chicken
