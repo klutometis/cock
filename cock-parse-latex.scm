@@ -249,14 +249,10 @@
          ;; Already texified above.
          (string-join parameters "\\\\\n")))))
 
-;;; Generalize this.
-(define (tex-procedure-to special-parameters)
-  (alist-ref/default special-parameters '@to '("unspecified")))
-
 (define (tex-parse-procedure doc expr data name formals)
   (receive (normal-parameters special-parameters)
     (doc-normal-and-special-parameters doc)
-    (let ((to (tex-procedure-to special-parameters)))
+    (let ((to (procedure-to special-parameters)))
       (let ((procedure
              (make-tex-procedure tex-procedure name formals to))
             (parameters (make-tex-parameters
@@ -285,10 +281,6 @@
    tex-item-description
    'description
    (string-join (map texify descriptions) "\n\n")))
-
-(define (scalar-procedure? normal-parameters special-parameters)
-  (or (not (null? normal-parameters))
-      (alist-ref/default special-parameters '@to #f)))
 
 (define (tex-parse-scalar doc expr data name)
   (receive (normal-parameters special-parameters)
@@ -329,7 +321,7 @@
 (define (tex-parse-case-lambda doc expr data name formals+)
   (receive (normal-parameters special-parameters)
     (doc-normal-and-special-parameters doc)
-    (let ((to (tex-procedure-to special-parameters)))
+    (let ((to (procedure-to special-parameters)))
       (let* ((procedures
               (string-join
                (map (lambda (formals)
@@ -358,12 +350,10 @@
              case-lambda
              parameters)))))))
 
-(define (formals parameters) (map car parameters))
-
 (define (tex-parse-syntax doc expr data name)
   (receive (normal-parameters special-parameters)
     (doc-normal-and-special-parameters doc)
-    (let ((to (tex-procedure-to special-parameters)))
+    (let ((to (procedure-to special-parameters)))
       (let ((syntax
              (make-tex-procedure
               tex-syntax
@@ -387,7 +377,7 @@
 (define (tex-parse-read doc expr data char)
   (receive (normal-parameters special-parameters)
     (doc-normal-and-special-parameters doc)
-    (let* ((to (tex-procedure-to special-parameters))
+    (let* ((to (procedure-to special-parameters))
            (read (substitute-template
                   tex-read
                   `((form . ,(texify char))
