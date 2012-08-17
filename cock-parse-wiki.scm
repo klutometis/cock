@@ -63,6 +63,19 @@ EOF
 EOF
 )
 
+(define (wiki-module name)
+  #<#EOF
+'''[module]''' {{#{name}}}
+
+EOF
+)
+
+(define (wiki-export export)
+  #<#EOF
+* [[###{export}]]
+EOF
+)
+
 ;;; What happens with colons in the definition?
 (define (wiki-parameter parameter definition)
   #<#EOF
@@ -282,6 +295,20 @@ EOF
                                record
                                fields)))))
 
+(define (make-wiki-exports exports)
+  (string-join (map wiki-export exports) "\n"))
+
+(define (wiki-parse-module doc expr data name exports)
+  (let ((module (wiki-module name))
+        (exports (make-wiki-exports exports)))
+    (thunk (parameterize ((write-source? #f))
+             (write-wiki-block doc
+                               expr
+                               data
+                               name
+                               module
+                               exports)))))
+
 (define (wiki-parse-docexpr document docexpr)
   (parameterize ((parse-directive wiki-parse-directive)
                  (parse-procedure wiki-parse-procedure)
@@ -291,8 +318,7 @@ EOF
                  (parse-syntax wiki-parse-syntax)
                  (parse-read wiki-parse-read)
                  (parse-record wiki-parse-record)
-                 ;; (parse-module wiki-parse-module)
-                 )
+                 (parse-module wiki-parse-module))
     (parse-docexpr document docexpr)))
 
 ;;; Needs to be generalized.
