@@ -53,6 +53,59 @@
   It's going to be a pain-in-the-ass to distinguish between intra- and
   inter-document links, isn't it? How I wish I could defer to the
   renderer.
+
+  #+BEGIN_SRC scheme
+    (use debug lowdown posix srfi-69 test)
+    
+    (test
+     "All the different items we'd have to deal with."
+     '(&
+       @
+       auto-link
+       blockquote
+       bullet-list
+       class
+       code
+       comment
+       div
+       emphasis
+       explicit-link
+       h2
+       h3
+       heading
+       hr
+       href
+       html-element
+       id
+       input
+       item
+       label
+       ordered-list
+       paragraph
+       ref
+       reference
+       reference-link
+       strong
+       title
+       ul
+       verbatim)
+     (let ((items (make-hash-table)))
+       (for-each
+           (lambda (file)
+             (call-with-input-file
+                 file
+               (lambda (input)
+                 (let ((document (markdown->sxml* input)))
+                   (let iter ((document document))
+                     (if (pair? document)
+                         (for-each iter document)
+                         (if (symbol? document)
+                             (hash-table-set! items document #t))))))))
+         (glob "markdown-tests/*"))
+       (sort (hash-table-keys items)
+             (lambda (x y) (string< (symbol->string x)
+                               (symbol->string y))))))
+  #+END_SRC
 * TODO Keyword-arguments to procedures
   See [[http://api.call-cc.org/doc/spiffy/start-server][start-server]].
 * TODO Long signature get cut off in =case-lambda=.
