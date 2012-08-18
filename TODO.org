@@ -1,3 +1,5 @@
+* TODO Setup-helper for documentation
+  Should degrade gracefully if e.g. =cock= is not installed.
 * TODO Changelog
 * TODO Repository
 * TODO License
