@@ -1,3 +1,6 @@
+* TODO Post-to-web
+  Can we do it directly over svn; or do we need to use the
+  web-interface to the wiki, somehow?
 * TODO Setup-helper for documentation
   Should degrade gracefully if e.g. =cock= is not installed.
 * TODO Changelog
