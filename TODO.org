@@ -32,9 +32,7 @@
   #+BEGIN_SRC scheme :tangle test-wiki.scm :shebang #!/usr/bin/env chicken-scheme
     (use cock-parse debug stack)
     
-    (let ((docexprs
-           (parse-files ;; "~/prg/scm/aima-chicken/aima-core.scm"
-                        "test-parse.scm")))
+    (let ((docexprs (parse-files "test-parse.scm")))
       (wiki-write-docexprs docexprs))
     
   #+END_SRC
