@@ -122,6 +122,25 @@
              (lambda (x y) (string< (symbol->string x)
                                (symbol->string y))))))
   #+END_SRC
+
+  #+BEGIN_SRC scheme
+    (use debug lowdown posix srfi-69 test)
+    
+    (for-each
+        (lambda (file)
+          (call-with-input-file
+              file
+            (lambda (input)
+              (let ((document (markdown->sxml* input)))
+                (debug document)
+                (let iter ((document document))
+                  (if (pair? document)
+                      (for-each iter document)
+                      (if (symbol? document)
+                          'harro)))))))
+      (glob "markdown-tests/*"))
+  #+END_SRC
+
   #+BEGIN_SRC scheme
     (use debug lowdown sxpath sxml-transforms)
     
