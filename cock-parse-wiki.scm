@@ -141,6 +141,14 @@ EOF
          (lambda ()
            (hash-table-set! data 'heading-level 3)
            (display (wiki-subsubsubtitle title)))))
+      ;; This is where me might to some fancy-schmancy
+      ;; markdown-to-wiki bullshit; maybe we can support a subset? I
+      ;; really just want monospace and links.
+      ((text)
+       (let ((text (string-join arguments "\n\n")))
+         (lambda ()
+           (display text)
+           (newline))))
       (else
        (lambda () (warning "wiki-parse-directive -- Unknown directive" directive))))))
 

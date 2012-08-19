@@ -218,6 +218,11 @@
          (write-template
           tex-subheading
           `((title . ,(car arguments))))))
+      ((text)
+       (let ((text (string-join arguments "\n\n")))
+         (lambda ()
+           (display text)
+           (newline))))
       (else
        (lambda () (warning "tex-parse-directive -- Unknown directive" directive))))))
 
