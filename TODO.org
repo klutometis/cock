@@ -206,6 +206,8 @@
         (strong . ,(lambda tag `("\\textbf{" ,(node-children tag) "}")))
         (*TOP* . ,(lambda tag (node-children tag)))
         (*PI* . ,(lambda tag '()))
+        ;; Hallelujah: this doesn't touch string-literals above; I'm free
+        ;; to texify all text passing through here.
         (*text* . ,(lambda (tag text) (texify text)))
         (*default* . ,(lambda tag (node-text tag)))))
     
