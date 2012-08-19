@@ -1,3 +1,9 @@
+* TODO Minimum required for self-documentation
+  At the very least, let's have a =@(source ...)= directive; we could
+  have =@(text ...)=, too, but we're going to fill it with
+  wiki-specific crap.
+
+  I'm yearning for =@(example ...)=.
 * TODO Post-to-web
   Can we do it directly over svn; or do we need to use the
   web-interface to the wiki, somehow?
@@ -411,6 +417,9 @@
     
     @(title "Test parse")
     @(heading "Harro thar!")
+    
+    @(text "We'd like to write a novel here, prease; none of this
+    Twitter-like hekato-sarantism.")
     
     (module just-a-little-module
       @("Little modules do work sometimes.")
