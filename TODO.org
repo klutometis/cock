@@ -142,6 +142,15 @@
   #+END_SRC
 
   #+BEGIN_SRC scheme
+    (reference (label "once") (href "/url") (title #f))
+    
+    (explicit-link
+     (href "/url/")
+     (label "URL" (#\space) "and" (#\space) "title")
+     (title "title preceded by two spaces"))
+  #+END_SRC
+
+  #+BEGIN_SRC scheme
     (use debug lowdown sxpath sxml-transforms)
     
     (define texify identity)
