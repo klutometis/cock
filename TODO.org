@@ -1,3 +1,10 @@
+* TODO Cock-within-cock
+  In other words, what if you're writing docs for an element and want
+  to insert e.g. source-code in the description? Ouch; we need
+  recursive pre-post-order. Unless, of course, the markdown-subset
+  suffices.
+
+  Yeah, let's do markdown with multi-line docs.
 * TODO Minimum required for self-documentation
   At the very least, let's have a =@(source ...)= directive; we could
   have =@(text ...)=, too, but we're going to fill it with
