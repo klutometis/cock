@@ -227,6 +227,9 @@
     I believe so."
            "This `@`-read-syntax is for reals."))
   #+END_SRC
+
+  In LaTeX, let's look for a prepended-hash: if it's there, it's a ref
+  to a label; if not, it's a hyperlink.
 * TODO Keyword-arguments to procedures
   See [[http://api.call-cc.org/doc/spiffy/start-server][start-server]].
 * TODO Long signature get cut off in =case-lambda=.
