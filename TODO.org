@@ -122,6 +122,83 @@
              (lambda (x y) (string< (symbol->string x)
                                (symbol->string y))))))
   #+END_SRC
+  #+BEGIN_SRC scheme
+    (use debug lowdown sxpath sxml-transforms)
+    
+    (define texify identity)
+    
+    (define (node-children node)
+      ((sxpath '((*not* @))) node))
+        
+    (define (node-attributes node)
+      ((sxpath '(@)) node))
+    
+    (define (node-text node)
+      ((sxpath '(*text*)) node))
+    
+    (define (call-with-children-attributes tag f)
+      (f (node-children tag) (node-attributes tag)))
+    
+    (define markdown->wiki
+      `(
+        ;; Do we want text or children?
+        (code . ,(lambda tag `("{{" ,(node-children tag) "}}")))
+        (emphasis . ,(lambda tag `("''" ,(node-children tag) "''")))
+        (explicit-link
+         *preorder* . ,(lambda tag
+                         (let ((href ((sxpath '(href)) tag)) 
+                               (label ((sxpath '(label)) tag)))
+                           `("[["
+                             ,(node-children href)
+                             "|"
+                             ,(node-children label)
+                             "]]"))))
+        (paragraph . ,(lambda tag `(,(node-children tag) "\n\n")))
+        (strong . ,(lambda tag `("'''" ,(node-children tag) "'''")))
+        (*TOP* . ,(lambda tag (node-children tag)))
+        (*PI* . ,(lambda tag '()))
+        (*text* . ,(lambda (tag text) text))
+        (*default* . ,(lambda tag (node-text tag)))))
+    
+    (define markdown->latex
+      `(
+        ;; Do we want text or children?
+        (code . ,(lambda tag `("\\texttt{" ,(node-children tag) "}")))
+        (emphasis . ,(lambda tag `("\\emph{" ,(node-children tag) "}")))
+        (explicit-link
+         *preorder* . ,(lambda tag
+                         (let ((href ((sxpath '(href)) tag)) 
+                               (label ((sxpath '(label)) tag)))
+                           `("\\href{"
+                             ,(node-children href)
+                             "}{"
+                             ,(node-children label)
+                             "}"))))
+        (paragraph . ,(lambda tag `(,(node-children tag) "\n\n")))
+        (strong . ,(lambda tag `("\\textbf{" ,(node-children tag) "}")))
+        (*TOP* . ,(lambda tag (node-children tag)))
+        (*PI* . ,(lambda tag '()))
+        (*text* . ,(lambda (tag text) (texify text)))
+        (*default* . ,(lambda tag (node-text tag)))))
+    
+    (for-each (lambda (markdown)
+           (SRV:send-reply
+            (pre-post-order (markdown->sxml* markdown)
+                            markdown->latex
+                            ;; markdown->wiki
+                            )))
+         '("[Intradocument link](#intra)"
+           "[Interdocument link](/inter)"
+           "[Blank link]"
+           "*harro*"
+           "_harro_"
+           "**harro**"
+           "__harro__"
+           "We're writing a paragraph of text here, aren't we?
+    
+    I believe so."
+           "This `@`-read-syntax is for reals."))
+  #+END_SRC
 * TODO Keyword-arguments to procedures
   See [[http://api.call-cc.org/doc/spiffy/start-server][start-server]].
 * TODO Long signature get cut off in =case-lambda=.
