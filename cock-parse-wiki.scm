@@ -89,19 +89,11 @@ EOF
 EOF
 )
 
-(define (wiki-preamble)
-  #<#EOF
-[[toc:]]
-
-EOF
-)
+;; Made these into a strings, because the brackets throw off paredit.
+(define (wiki-preamble) "[[toc:]]\n")
 
 (define (wiki-postamble)
-  #<#EOF
-Documented by [[/egg/cock|cock]].
-
-EOF
-)
+  "Documented by [[/egg/cock|cock]].\n")
 
 (define (wiki-parameter-object name init)
   #<#EOF
