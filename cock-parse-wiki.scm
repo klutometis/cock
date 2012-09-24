@@ -90,10 +90,24 @@ EOF
 )
 
 ;; Made these into a strings, because the brackets throw off paredit.
-(define (wiki-preamble) "[[toc:]]\n")
+(define (wiki-preamble title description)
+  #<#EOF
+#(wiki-title title)
+#{description}
+[[toc:]]
 
-(define (wiki-postamble)
-  "Documented by [[/egg/cock|cock]].\n")
+EOF
+)
+
+(define (wiki-postamble author username)
+  #<#EOF
+#(wiki-subtitle "About this egg")
+#(wiki-subsubtitle "Author")
+[[/users/#{username}#(integer->char 124)#{author}]]
+#(wiki-subsubtitle "Colophon")
+Documented by [[/egg/cock#(integer->char 124)cock]].
+EOF
+)
 
 (define (wiki-parameter-object name init)
   #<#EOF
@@ -113,9 +127,21 @@ EOF
         (arguments (cdr doc))
         (data (document-data document)))
     (case directive
+      ((email)
+       (hash-table-set! data 'email (car arguments))
+       void)
+      ((username)
+       (hash-table-set! data 'username (car arguments))
+       void)
+      ((author)
+       (hash-table-set! data 'author (car arguments))
+       void)
       ((title)
-       (let ((title (car arguments)))
-         (lambda () (display (wiki-title title)))))
+       (hash-table-set! data 'title (car arguments))
+       void)
+      ((description)
+       (hash-table-set! data 'description (car arguments))
+       void)
       ((heading)
        (let ((title (car arguments)))
          (lambda ()
@@ -337,6 +363,17 @@ EOF
     (docexprs "The parsed docexprs"))
   (let* ((document (make-document (make-hash-table) (make-stack)))
          (parsed-docexprs (wiki-parse-docexprs document docexprs)))
-    (display (wiki-preamble))
-    (stack-for-each parsed-docexprs (lambda (docexpr) (docexpr)))
-    (display (wiki-postamble))))
+    (let ((data (document-data document)))
+      (let ((author
+             (hash-table-ref/default data 'author "Anonymous"))
+            (username
+             (hash-table-ref/default data 'username "anonymous"))
+            (email
+             (hash-table-ref/default data 'email "anonymous@example.com"))
+            (title
+             (hash-table-ref/default data 'title "Title"))
+            (description
+             (hash-table-ref/default data 'description "Description")))
+        (display (wiki-preamble title description))
+        (stack-for-each parsed-docexprs (lambda (docexpr) (docexpr)))
+        (display (wiki-postamble author username))))))
