@@ -1,3 +1,4 @@
+* TODO =setup-helper=-like-thing we can call from setup.
 * TODO HTML driver
   An HTML driver is useful, unfortunately, for e.g. github-pages.
 * TODO Cock-within-cock
