@@ -1,4 +1,9 @@
 * TODO =setup-helper=-like-thing we can call from setup.
+  Would define a form =cock= on analogy with e.g. =compile=;
+  basically, a wrapper around =run=. Has options like: =output:=; if
+  given no files, picks up all =.scm= in the directory?
+
+  Would be nice if it could default to e.g. =<egg-name>.wiki=.
 * TODO HTML driver
   An HTML driver is useful, unfortunately, for e.g. github-pages.
 * TODO Cock-within-cock
