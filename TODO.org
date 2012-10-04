@@ -1,6 +1,6 @@
-* TODO Option not to export
 * TODO We're still getting parser-leakage!
 * TODO =setup-helper=-like-thing we can call from setup.
+# <<setup-helper>>
   Would define a form =cock= on analogy with e.g. =compile=;
   basically, a wrapper around =run=. Has options like: =output:=; if
   given no files, picks up all =.scm= in the directory?
@@ -8,43 +8,15 @@
   Would be nice if it could default to e.g. =<egg-name>.wiki=.
 * TODO HTML driver
   An HTML driver is useful, unfortunately, for e.g. github-pages.
-* TODO Cock-within-cock
-  In other words, what if you're writing docs for an element and want
-  to insert e.g. source-code in the description? Ouch; we need
-  recursive pre-post-order. Unless, of course, the markdown-subset
-  suffices.
-
-  Yeah, let's do markdown with multi-line docs.
 * TODO Minimum required for self-documentation
   At the very least, let's have a =@(source ...)= directive; we could
   have =@(text ...)=, too, but we're going to fill it with
   wiki-specific crap.
 
   I'm yearning for =@(example ...)=.
-* TODO Post-to-web
-  Can we do it directly over svn; or do we need to use the
-  web-interface to the wiki, somehow?
-* TODO Setup-helper for documentation
-  Should degrade gracefully if e.g. =cock= is not installed.
 * TODO Changelog
 * TODO Repository
 * TODO License
-* DONE =thunk=-form
-  CLOSED: [2012-08-17 Fri 14:05]
-  #+BEGIN_SRC scheme
-    (define-syntax thunk
-      (lambda (expression rename compare)
-        (let ((body (cdr expression))
-              (%lambda (rename 'lambda)))
-          `(,%lambda () ,@body))))
-    
-    (with-output-to-string (thunk (display 2)))
-    
-  #+END_SRC
-* DONE Footer: created by =cock=
-  CLOSED: [2012-08-17 Fri 14:06]
-* DONE TOC-header on wiki
-  CLOSED: [2012-08-17 Fri 14:06]
 * TODO =parse-procedure=, &c. should be more than stubs.
   There's a lot of boilerplate work to be done there that we could
   specialize for e.g. wiki and latex.
@@ -52,16 +24,6 @@
   A better mechanism would be to transform the code into some
   intermediate S-expression representation; that way, each driver is
   simply a ruleset.
-* TODO =svnwiki= driver
-  I've started a [[https://wiki.call-cc.org/users/peter-danenberg][sandbox]].
-
-  #+BEGIN_SRC scheme :tangle test-wiki.scm :shebang #!/usr/bin/env chicken-scheme
-    (use cock-parse debug stack)
-    
-    (let ((docexprs (parse-files "test-parse.scm")))
-      (wiki-write-docexprs docexprs))
-    
-  #+END_SRC
 * TODO Markup
   Instead of using strings (which will be given verbatim), can't we
   have some sort of ad-hoc s-expression-based markup? E.g.:
@@ -245,26 +207,137 @@
 * TODO Keyword-arguments to procedures
   See [[http://api.call-cc.org/doc/spiffy/start-server][start-server]].
 * TODO Long signature get cut off in =case-lambda=.
-* CANCELED URLs, bold, monospace, &c.
-  CLOSED: [2012-08-17 Fri 14:07]
-  - CLOSING NOTE [2012-08-17 Fri 14:07] \\
-    See [[Markup]].
 * TODO =@NB=
 * TODO =@TODO=
 * TODO References
+* TODO Inherit unspecified parameters from other procedures.
+* TODO =@example=
+  Everything should be able to take examples, even modules; examples
+  should be as fundamental as source-code.
+* TODO Doubling up functions
+  See e.g. [[http://api.call-cc.org/doc/posix#def:call-with-output-pipe][call-with-{input,output}-pipe]].
+* TODO Classes?
+  Maybe this can be an extension.
+* TODO Define an intermediate long-hand.
+  If this, for instance, is our long-hand:
+
+  #+BEGIN_SRC scheme
+    (define (procedure a)
+      @(description: "Do something."
+        parameters: ((a "Thing to do"))
+        to: "Thing done")
+      (void))
+  #+END_SRC
+
+  we can come up with any number of short-hands that reduce to it.
+* TODO Ability to suppress internally documented functions.
+# <<internal-functions>>
+  Let's use =@internal=. Or: instead of =@<identifier>=, we should
+  reuse the keyword mechanism? Principle of least surprise? Would look
+  like: =internal:=. All the asperands are alien, I think.
+
+  On the other hand, how would you document keywords? No, we have to
+  resort to something noisy.
+
+  #+BEGIN_SRC scheme
+    (define (procedure a)
+      @("Procedure does something."
+        (a "Parameter")
+        ;; If we do this, we can't document keywords named `to:'.
+        (to: "Another thing")
+        ;; That's why we settled on this:
+        (@to "Another thing")
+        @internal)
+      'b)
+  #+END_SRC
+
+  Or, fuck it: just use naked symbols:
+
+  #+BEGIN_SRC scheme
+    (define (procedure a)
+      @("Procedure does something."
+        (a "Parameter")
+        ;; Don't see how we can get around this one.
+        (@to "Another thing")
+        internal)
+      'b)
+    
+    (define (procedure a)
+      @("Procedure does something."
+        (parameters
+         (a "Parameter"))
+        ;; Don't see how we can get around this one.
+        (to "Another thing")
+        internal)
+      'b)
+    
+    (define (procedure a)
+      @("Procedure does something."
+        (a "Parameter")
+        ;; Don't see how we can get around this one.
+        to: "Another thing"
+        internal:)
+      'b)
+    
+    ;;; If we're going keyword-heavy:
+    
+    (define (procedure a)
+      ;; `description:' already fucks up the indentation.
+      @(description: "Procedure does something."
+                     parameters:))
+    
+    (define (procedure a)
+      @("Procedure does something."
+        parameters: '((a "Parameter"))
+        to: "Another thing"
+        internal: #t))
+    
+  #+END_SRC
+* TODO Get metadata from egg.
+  Authors, &c.
+* TODO Multiple authors (maintainer, &c.)
+  [[http://tex.stackexchange.com/questions/9594/adding-more-than-one-author-with-different-affiliation][Using footnotes]] and [[http://tex.stackexchange.com/questions/4805/whats-the-correct-use-of-author-when-multiple-authors][using \texttt{\char`\\ and}]].
+* DONE =thunk=-form
+  CLOSED: [2012-08-17 Fri 14:05]
+  #+BEGIN_SRC scheme
+    (define-syntax thunk
+      (lambda (expression rename compare)
+        (let ((body (cdr expression))
+              (%lambda (rename 'lambda)))
+          `(,%lambda () ,@body))))
+    
+    (with-output-to-string (thunk (display 2)))
+    
+  #+END_SRC
+* DONE Footer: created by =cock=
+  CLOSED: [2012-08-17 Fri 14:06]
+* DONE TOC-header on wiki
+  CLOSED: [2012-08-17 Fri 14:06]
+* DONE =svnwiki= driver
+  CLOSED: [2012-10-04 Thu 09:39]
+  I've started a [[https://wiki.call-cc.org/users/peter-danenberg][sandbox]].
+
+  #+BEGIN_SRC scheme :tangle test-wiki.scm :shebang #!/usr/bin/env chicken-scheme
+    (use cock-parse debug stack)
+    
+    (let ((docexprs (parse-files "test-parse.scm")))
+      (wiki-write-docexprs docexprs))
+    
+  #+END_SRC
 * DONE Style
   CLOSED: [2012-08-17 Fri 14:07]
   Keep e.g. =@to= to one word (the type?), something more descriptive
   in the procedure description.
-* TODO Inherit unspecified parameters from other procedures.
 * DONE Shoot: even scalars can have parameters.
   CLOSED: [2012-08-17 Fri 14:07]
   This happens when we simply rename functions. Have to catch this
   case.
-* TODO Syntax parameters
+* DONE Syntax parameters
+  CLOSED: [2012-10-04 Thu 09:39]
   It's a little more complicated: have to be able to specify optional
   parameters, &c.
-* TODO Parameter-defaults
+* DONE Parameter-defaults
+  CLOSED: [2012-10-04 Thu 09:39]
   E.g.:
 
   #+BEGIN_SRC scheme
@@ -273,17 +346,12 @@
 
   Useful for e.g. parameters and case lambda. (We already do this for
   parameters, thank the gods.)
-* TODO Figure out how to doc from =.setup=.
 * DONE [[http://emacswiki.org/emacs/CompileCommand#toc7][Compile in different directory]].
   CLOSED: [2012-08-17 Fri 14:07]
-* TODO =@example=
-  Everything should be able to take examples, even modules; examples
-  should be as fundamental as source-code.
-* TODO Doubling up functions
-  See e.g. [[http://api.call-cc.org/doc/posix#def:call-with-output-pipe][call-with-{input,output}-pipe]].
 * DONE [[http://tex.stackexchange.com/questions/11525/generating-pdf-without-any-intermediary-files-stdin-stdout][XeTeX from stdin]]
   CLOSED: [2012-08-07 Tue 19:14]
-* TODO Modules
+* DONE Modules
+  CLOSED: [2012-10-04 Thu 09:39]
   The modules themselves have docs? Shit. That's a lot of source-code.
 
   You know what, though? We can't do this, I believe as long as we
@@ -419,7 +487,8 @@
             (else (tex-write-docexprs (apply parse-files files)))))
     
   #+END_SRC
-* TODO Line-numbers are pretty meaningless.
+* DONE Line-numbers are pretty meaningless.
+  CLOSED: [2012-10-04 Thu 09:39]
   Not only do they not correspond to the file, they're even
   inconsistent within the function; since they go through =pp=.
 * DONE Binary
@@ -436,107 +505,15 @@
   for =include=? But then we have to scour everything for =include=.
 
   If only we could depend upon Chicken to do the stitching.
-* TODO Classes?
-  Maybe this can be an extension.
 * DONE Source at end?
   CLOSED: [2012-08-17 Fri 14:08]
-* TODO Types from the Chicken wiki
-  See [[https://wiki.call-cc.org/edit-help][here]]:
-
-  - read
-  - parameter
-  - record
-  - string
-  - class
-  - method
-  - constant
-  - setter
-  - syntax
-  - type
-
-  Records are a really good idea; have to know: =defstruct=,
-  =define-record=, =define-record-type=, &c.
-* TODO Define an intermediate long-hand.
-  If this, for instance, is our long-hand:
-
-  #+BEGIN_SRC scheme
-    (define (procedure a)
-      @(description: "Do something."
-        parameters: ((a "Thing to do"))
-        to: "Thing done")
-      (void))
-  #+END_SRC
-
-  we can come up with any number of short-hands that reduce to it.
-* TODO =read=
+* DONE =read=
+  CLOSED: [2012-10-04 Thu 09:38]
   It looks like read optionally [[http://wiki.call-cc.org/eggref/4/lazy-ffi#read-syntax][takes parameters]]; it appears as though
   a =@to= is necessary. Initial parameter should be something
   describing the read-form; e.g. =#~string=, =#~(item ...)=.
-* TODO Ability to suppress internally documented functions.
-  Let's use =@internal=. Or: instead of =@<identifier>=, we should
-  reuse the keyword mechanism? Principle of least surprise? Would look
-  like: =internal:=. All the asperands are alien, I think.
-
-  On the other hand, how would you document keywords? No, we have to
-  resort to something noisy.
-
-  #+BEGIN_SRC scheme
-    (define (procedure a)
-      @("Procedure does something."
-        (a "Parameter")
-        ;; If we do this, we can't document keywords named `to:'.
-        (to: "Another thing")
-        ;; That's why we settled on this:
-        (@to "Another thing")
-        @internal)
-      'b)
-  #+END_SRC
-
-  Or, fuck it: just use naked symbols:
-
-  #+BEGIN_SRC scheme
-    (define (procedure a)
-      @("Procedure does something."
-        (a "Parameter")
-        ;; Don't see how we can get around this one.
-        (@to "Another thing")
-        internal)
-      'b)
-    
-    (define (procedure a)
-      @("Procedure does something."
-        (parameters
-         (a "Parameter"))
-        ;; Don't see how we can get around this one.
-        (to "Another thing")
-        internal)
-      'b)
-    
-    (define (procedure a)
-      @("Procedure does something."
-        (a "Parameter")
-        ;; Don't see how we can get around this one.
-        to: "Another thing"
-        internal:)
-      'b)
-    
-    ;;; If we're going keyword-heavy:
-    
-    (define (procedure a)
-      ;; `description:' already fucks up the indentation.
-      @(description: "Procedure does something."
-                     parameters:))
-    
-    (define (procedure a)
-      @("Procedure does something."
-        parameters: '((a "Parameter"))
-        to: "Another thing"
-        internal: #t))
-    
-  #+END_SRC
-* TODO Get metadata from egg.
-  Authors, &c.
-* TODO Test parse module.
+* DONE Test parse module.
+  CLOSED: [2012-10-04 Thu 09:38]
   #+BEGIN_SRC scheme :tangle test-parse.scm :shebang #!/usr/bin/env chicken-scheme
     (include "cock-parse")
     (import cock-parse)
@@ -644,10 +621,10 @@
         org-tangle TODO.org
     
   #+END_SRC
-* TODO Records
-* TODO Multiple authors (maintainer, &c.)
-  [[http://tex.stackexchange.com/questions/9594/adding-more-than-one-author-with-different-affiliation][Using footnotes]] and [[http://tex.stackexchange.com/questions/4805/whats-the-correct-use-of-author-when-multiple-authors][using \texttt{\char`\\ and}]].
-* TODO Test the embedded reader-macro with compiled code.
+* DONE Records
+  CLOSED: [2012-10-04 Thu 09:38]
+* DONE Test the embedded reader-macro with compiled code.
+  CLOSED: [2012-10-04 Thu 09:38]
   #+BEGIN_SRC scheme :tangle test-compiled.scm :shebang #!/usr/bin/env chicken-scheme
     (use cock)
     
@@ -661,3 +638,48 @@
     CHICKEN_SCHEME_OPTIONS="-X cock" ./test-compiled.scm
     
   #+END_SRC
+* CANCELED Option not to export
+  CLOSED: [2012-10-04 Thu 09:37]
+  - CLOSING NOTE [2012-10-04 Thu 09:37] \\
+    See [[internal-functions]].
+* CANCELED Cock-within-cock
+  CLOSED: [2012-10-04 Thu 09:40]
+  In other words, what if you're writing docs for an element and want
+  to insert e.g. source-code in the description? Ouch; we need
+  recursive pre-post-order. Unless, of course, the markdown-subset
+  suffices.
+
+  Yeah, let's do markdown with multi-line docs.
+* CANCELED Post-to-web
+  CLOSED: [2012-10-04 Thu 09:40]
+  Can we do it directly over svn; or do we need to use the
+  web-interface to the wiki, somehow?
+* CANCELED Setup-helper for documentation
+  CLOSED: [2012-10-04 Thu 09:40]
+  - CLOSING NOTE [2012-10-04 Thu 09:40] \\
+    See [[setup-helper]].
+  Should degrade gracefully if e.g. =cock= is not installed.
+* CANCELED URLs, bold, monospace, &c.
+  CLOSED: [2012-08-17 Fri 14:07]
+  - CLOSING NOTE [2012-08-17 Fri 14:07] \\
+    See [[Markup]].
+* CANCELED Figure out how to doc from =.setup=.
+  CLOSED: [2012-10-04 Thu 09:41]
+  - CLOSING NOTE [2012-10-04 Thu 09:41] \\
+    See [[setup-helper]].
+* Types from the Chicken wiki
+  See [[https://wiki.call-cc.org/edit-help][here]]:
+
+  - read
+  - parameter
+  - record
+  - string
+  - class
+  - method
+  - constant
+  - setter
+  - syntax
+  - type
+
+  Records are a really good idea; have to know: =defstruct=,
+  =define-record=, =define-record-type=, &c.
