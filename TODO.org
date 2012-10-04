@@ -1,4 +1,5 @@
 * TODO Option not to export
+* TODO We're still getting parser-leakage!
 * TODO =setup-helper=-like-thing we can call from setup.
   Would define a form =cock= on analogy with e.g. =compile=;
   basically, a wrapper around =run=. Has options like: =output:=; if
