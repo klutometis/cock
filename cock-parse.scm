@@ -10,8 +10,7 @@ drivers then write docexprs as e.g. LaTeX.")
   (parse-files
    tex-write-docexprs
    wiki-write-docexprs)
-  (import alist-lib
-          chicken
+  (import chicken
           data-structures
           extras
           ports
