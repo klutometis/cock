@@ -1,3 +1,7 @@
+* TODO Groff output for man-pages?
+  This is usually bin-specific, though; we'd put directives in the
+  bin-file, then, wouldn't we: and couldn't we parse =args= while
+  we're at it?
 * TODO We're still getting parser-leakage!
 * TODO =setup-helper=-like-thing we can call from setup.
 # <<setup-helper>>
