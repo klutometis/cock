@@ -1,3 +1,13 @@
+* TODO Inherit unspecified parameters from other procedures.
+  #+BEGIN_SRC scheme
+    (define (foo bar)
+      @("For reals"
+        (bar (@inherit baz [qux]))))
+    
+    (define (baz qux)
+      @("Sort of"
+        (qux "Yes, wirklich")))
+  #+END_SRC
 * TODO Groff output for man-pages?
   This is usually bin-specific, though; we'd put directives in the
   bin-file, then, wouldn't we: and couldn't we parse =args= while
@@ -214,7 +224,6 @@
 * TODO =@NB=
 * TODO =@TODO=
 * TODO References
-* TODO Inherit unspecified parameters from other procedures.
 * TODO =@example=
   Everything should be able to take examples, even modules; examples
   should be as fundamental as source-code.
