@@ -1,3 +1,10 @@
+* TODO =@example=
+  Everything should be able to take examples, even modules; examples
+  should be as fundamental as source-code.
+
+  Since the package itself is installed before cock, we can
+  theoretically =(use <package>)=, run the examples, and list the
+  output. Some kind of =@dontrun= directive, &c.
 * TODO Doubling up functions
   See e.g. [[http://api.call-cc.org/doc/posix#def:call-with-output-pipe][call-with-{input,output}-pipe]]. Groups of functions; another
   example is [[http://api.call-cc.org/doc/scsh-process][scsh-process]].
@@ -227,9 +234,6 @@
 * TODO =@NB=
 * TODO =@TODO=
 * TODO References
-* TODO =@example=
-  Everything should be able to take examples, even modules; examples
-  should be as fundamental as source-code.
 * TODO Classes?
   Maybe this can be an extension.
 * TODO Define an intermediate long-hand.
