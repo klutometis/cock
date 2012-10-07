@@ -1,3 +1,6 @@
+* TODO Doubling up functions
+  See e.g. [[http://api.call-cc.org/doc/posix#def:call-with-output-pipe][call-with-{input,output}-pipe]]. Groups of functions; another
+  example is [[http://api.call-cc.org/doc/scsh-process][scsh-process]].
 * TODO Inherit unspecified parameters from other procedures.
   #+BEGIN_SRC scheme
     (define (foo bar)
@@ -227,8 +230,6 @@
 * TODO =@example=
   Everything should be able to take examples, even modules; examples
   should be as fundamental as source-code.
-* TODO Doubling up functions
-  See e.g. [[http://api.call-cc.org/doc/posix#def:call-with-output-pipe][call-with-{input,output}-pipe]].
 * TODO Classes?
   Maybe this can be an extension.
 * TODO Define an intermediate long-hand.
