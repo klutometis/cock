@@ -1,3 +1,11 @@
+* DONE Whoops: circular dependencies.
+  CLOSED: [2012-10-08 Mon 16:16]
+  - CLOSING NOTE [2012-10-08 Mon 16:16] \\
+    Create cock-utils; fix circular dependency.
+  It turned out that the dependency e.g. alist-list <-> cock was
+  pathological; the solution: create a new egg, =cock-utils=, that
+  does the heavy lifting. =cock= is merely a reader macro for
+  compilation.
 * DONE =thunk=-form
   CLOSED: [2012-08-17 Fri 14:05]
   #+BEGIN_SRC scheme
