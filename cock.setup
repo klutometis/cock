@@ -5,12 +5,3 @@
  'cock
  (extension-version "0.4.1"))
 
-;;; Cock-parse module
-(setup-shared-extension-module
- 'cock-parse
- (extension-version "0.4.1")
- compile-options: '(-X cock))
-
-;;; Cock executable
-(compile "bin/cock.scm" -o cock)
-(install-program 'cock "cock")
