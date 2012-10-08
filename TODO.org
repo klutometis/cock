@@ -1,320 +1,3 @@
-* TODO =@example=
-  Everything should be able to take examples, even modules; examples
-  should be as fundamental as source-code.
-
-  Since the package itself is installed before cock, we can
-  theoretically =(use <package>)=, run the examples, and list the
-  output. Some kind of =@dontrun= directive, &c.
-* TODO Doubling up functions
-  See e.g. [[http://api.call-cc.org/doc/posix#def:call-with-output-pipe][call-with-{input,output}-pipe]]. Groups of functions; another
-  example is [[http://api.call-cc.org/doc/scsh-process][scsh-process]].
-* TODO Inherit unspecified parameters from other procedures.
-  #+BEGIN_SRC scheme
-    (define (foo bar)
-      @("For reals"
-        (bar (@inherit baz [qux]))))
-    
-    (define (baz qux)
-      @("Sort of"
-        (qux "Yes, wirklich")))
-  #+END_SRC
-* TODO Groff output for man-pages?
-  This is usually bin-specific, though; we'd put directives in the
-  bin-file, then, wouldn't we: and couldn't we parse =args= while
-  we're at it?
-* TODO We're still getting parser-leakage!
-* TODO =setup-helper=-like-thing we can call from setup.
-# <<setup-helper>>
-  Would define a form =cock= on analogy with e.g. =compile=;
-  basically, a wrapper around =run=. Has options like: =output:=; if
-  given no files, picks up all =.scm= in the directory?
-
-  Would be nice if it could default to e.g. =<egg-name>.wiki=.
-* TODO HTML driver
-  An HTML driver is useful, unfortunately, for e.g. github-pages.
-* TODO Minimum required for self-documentation
-  At the very least, let's have a =@(source ...)= directive; we could
-  have =@(text ...)=, too, but we're going to fill it with
-  wiki-specific crap.
-
-  I'm yearning for =@(example ...)=.
-* TODO Changelog
-* TODO Repository
-* TODO License
-* TODO =parse-procedure=, &c. should be more than stubs.
-  There's a lot of boilerplate work to be done there that we could
-  specialize for e.g. wiki and latex.
-* TODO =pre-post-order=
-  A better mechanism would be to transform the code into some
-  intermediate S-expression representation; that way, each driver is
-  simply a ruleset.
-* TODO Markup
-  Instead of using strings (which will be given verbatim), can't we
-  have some sort of ad-hoc s-expression-based markup? E.g.:
-
-  #+BEGIN_SRC scheme
-    @(This is (em some) (_ markup).
-      (arg "Argument"))
-  #+END_SRC
-
-  Meh; we have no good way to differentiate argument lists. Fuck it:
-  let's go [[http://wiki.call-cc.org/eggref/4/lowdown][markdown]].
-
-  (See the defunct [[https://wiki.call-cc.org/eggref/4/multidoc][multidoc]], by the way.)
-
-  It's going to be a pain-in-the-ass to distinguish between intra- and
-  inter-document links, isn't it? How I wish I could defer to the
-  renderer.
-
-  #+BEGIN_SRC scheme
-    (use debug lowdown posix srfi-69 test)
-    
-    (test
-     "All the different items we'd have to deal with."
-     '(&
-       @
-       auto-link
-       blockquote
-       bullet-list
-       class
-       code
-       comment
-       div
-       emphasis
-       explicit-link
-       h2
-       h3
-       heading
-       hr
-       href
-       html-element
-       id
-       input
-       item
-       label
-       ordered-list
-       paragraph
-       ref
-       reference
-       reference-link
-       strong
-       title
-       ul
-       verbatim)
-     (let ((items (make-hash-table)))
-       (for-each
-           (lambda (file)
-             (call-with-input-file
-                 file
-               (lambda (input)
-                 (let ((document (markdown->sxml* input)))
-                   (let iter ((document document))
-                     (if (pair? document)
-                         (for-each iter document)
-                         (if (symbol? document)
-                             (hash-table-set! items document #t))))))))
-         (glob "markdown-tests/*"))
-       (sort (hash-table-keys items)
-             (lambda (x y) (string< (symbol->string x)
-                               (symbol->string y))))))
-  #+END_SRC
-
-  #+BEGIN_SRC scheme
-    (use debug lowdown posix srfi-69 test)
-    
-    (for-each
-        (lambda (file)
-          (call-with-input-file
-              file
-            (lambda (input)
-              (let ((document (markdown->sxml* input)))
-                (debug document)
-                (let iter ((document document))
-                  (if (pair? document)
-                      (for-each iter document)
-                      (if (symbol? document)
-                          'harro)))))))
-      (glob "markdown-tests/*"))
-  #+END_SRC
-
-  #+BEGIN_SRC scheme
-    (reference (label "once") (href "/url") (title #f))
-    
-    (explicit-link
-     (href "/url/")
-     (label "URL" (#\space) "and" (#\space) "title")
-     (title "title preceded by two spaces"))
-  #+END_SRC
-
-  #+BEGIN_SRC scheme
-    (use debug lowdown sxpath sxml-transforms)
-    
-    (define texify identity)
-    
-    (define (node-children node)
-      ((sxpath '((*not* @))) node))
-        
-    (define (node-attributes node)
-      ((sxpath '(@)) node))
-    
-    (define (node-text node)
-      ((sxpath '(*text*)) node))
-    
-    (define (call-with-children-attributes tag f)
-      (f (node-children tag) (node-attributes tag)))
-    
-    (define markdown->wiki
-      `(
-        ;; Do we want text or children?
-        (code . ,(lambda tag `("{{" ,(node-children tag) "}}")))
-        (emphasis . ,(lambda tag `("''" ,(node-children tag) "''")))
-        (explicit-link
-         *preorder* . ,(lambda tag
-                         (let ((href ((sxpath '(href)) tag)) 
-                               (label ((sxpath '(label)) tag)))
-                           `("[["
-                             ,(node-children href)
-                             "|"
-                             ,(node-children label)
-                             "]]"))))
-        (paragraph . ,(lambda tag `(,(node-children tag) "\n\n")))
-        (strong . ,(lambda tag `("'''" ,(node-children tag) "'''")))
-        (*TOP* . ,(lambda tag (node-children tag)))
-        (*PI* . ,(lambda tag '()))
-        (*text* . ,(lambda (tag text) text))
-        (*default* . ,(lambda tag (node-text tag)))))
-    
-    (define markdown->latex
-      `(
-        ;; Do we want text or children?
-        (code . ,(lambda tag `("\\texttt{" ,(node-children tag) "}")))
-        (emphasis . ,(lambda tag `("\\emph{" ,(node-children tag) "}")))
-        (explicit-link
-         *preorder* . ,(lambda tag
-                         (let ((href ((sxpath '(href)) tag)) 
-                               (label ((sxpath '(label)) tag)))
-                           `("\\href{"
-                             ,(node-children href)
-                             "}{"
-                             ,(node-children label)
-                             "}"))))
-        (paragraph . ,(lambda tag `(,(node-children tag) "\n\n")))
-        (strong . ,(lambda tag `("\\textbf{" ,(node-children tag) "}")))
-        (*TOP* . ,(lambda tag (node-children tag)))
-        (*PI* . ,(lambda tag '()))
-        ;; Hallelujah: this doesn't touch string-literals above; I'm free
-        ;; to texify all text passing through here.
-        (*text* . ,(lambda (tag text) (texify text)))
-        (*default* . ,(lambda tag (node-text tag)))))
-    
-    (for-each (lambda (markdown)
-           (SRV:send-reply
-            (pre-post-order (markdown->sxml* markdown)
-                            markdown->latex
-                            ;; markdown->wiki
-                            )))
-         '("[Intradocument link](#intra)"
-           "[Interdocument link](/inter)"
-           "[Blank link]"
-           "*harro*"
-           "_harro_"
-           "**harro**"
-           "__harro__"
-           "We're writing a paragraph of text here, aren't we?
-    
-    I believe so."
-           "This `@`-read-syntax is for reals."))
-  #+END_SRC
-
-  In LaTeX, let's look for a prepended-hash: if it's there, it's a ref
-  to a label; if not, it's a hyperlink.
-* TODO Keyword-arguments to procedures
-  See [[http://api.call-cc.org/doc/spiffy/start-server][start-server]].
-* TODO Long signature get cut off in =case-lambda=.
-* TODO =@NB=
-* TODO =@TODO=
-* TODO References
-* TODO Classes?
-  Maybe this can be an extension.
-* TODO Define an intermediate long-hand.
-  If this, for instance, is our long-hand:
-
-  #+BEGIN_SRC scheme
-    (define (procedure a)
-      @(description: "Do something."
-        parameters: ((a "Thing to do"))
-        to: "Thing done")
-      (void))
-  #+END_SRC
-
-  we can come up with any number of short-hands that reduce to it.
-* TODO Ability to suppress internally documented functions.
-# <<internal-functions>>
-  Let's use =@internal=. Or: instead of =@<identifier>=, we should
-  reuse the keyword mechanism? Principle of least surprise? Would look
-  like: =internal:=. All the asperands are alien, I think.
-
-  On the other hand, how would you document keywords? No, we have to
-  resort to something noisy.
-
-  #+BEGIN_SRC scheme
-    (define (procedure a)
-      @("Procedure does something."
-        (a "Parameter")
-        ;; If we do this, we can't document keywords named `to:'.
-        (to: "Another thing")
-        ;; That's why we settled on this:
-        (@to "Another thing")
-        @internal)
-      'b)
-  #+END_SRC
-
-  Or, fuck it: just use naked symbols:
-
-  #+BEGIN_SRC scheme
-    (define (procedure a)
-      @("Procedure does something."
-        (a "Parameter")
-        ;; Don't see how we can get around this one.
-        (@to "Another thing")
-        internal)
-      'b)
-    
-    (define (procedure a)
-      @("Procedure does something."
-        (parameters
-         (a "Parameter"))
-        ;; Don't see how we can get around this one.
-        (to "Another thing")
-        internal)
-      'b)
-    
-    (define (procedure a)
-      @("Procedure does something."
-        (a "Parameter")
-        ;; Don't see how we can get around this one.
-        to: "Another thing"
-        internal:)
-      'b)
-    
-    ;;; If we're going keyword-heavy:
-    
-    (define (procedure a)
-      ;; `description:' already fucks up the indentation.
-      @(description: "Procedure does something."
-                     parameters:))
-    
-    (define (procedure a)
-      @("Procedure does something."
-        parameters: '((a "Parameter"))
-        to: "Another thing"
-        internal: #t))
-    
-  #+END_SRC
-* TODO Get metadata from egg.
-  Authors, &c.
-* TODO Multiple authors (maintainer, &c.)
-  [[http://tex.stackexchange.com/questions/9594/adding-more-than-one-author-with-different-affiliation][Using footnotes]] and [[http://tex.stackexchange.com/questions/4805/whats-the-correct-use-of-author-when-multiple-authors][using \texttt{\char`\\ and}]].
 * DONE =thunk=-form
   CLOSED: [2012-08-17 Fri 14:05]
   #+BEGIN_SRC scheme
@@ -656,6 +339,395 @@
     CHICKEN_SCHEME_OPTIONS="-X cock" ./test-compiled.scm
     
   #+END_SRC
+* CANCELED =@example=
+  CLOSED: [2012-10-08 Mon 16:13]
+  - CLOSING NOTE [2012-10-08 Mon 16:13] \\
+    Move to cock-utils.
+  Everything should be able to take examples, even modules; examples
+  should be as fundamental as source-code.
+
+  Since the package itself is installed before cock, we can
+  theoretically =(use <package>)=, run the examples, and list the
+  output. Some kind of =@dontrun= directive, &c.
+* CANCELED Doubling up functions
+  CLOSED: [2012-10-08 Mon 16:13]
+  - CLOSING NOTE [2012-10-08 Mon 16:13] \\
+    Move to cock-utils.
+  See e.g. [[http://api.call-cc.org/doc/posix#def:call-with-output-pipe][call-with-{input,output}-pipe]]. Groups of functions; another
+  example is [[http://api.call-cc.org/doc/scsh-process][scsh-process]].
+* CANCELED Inherit unspecified parameters from other procedures.
+  CLOSED: [2012-10-08 Mon 16:13]
+  - CLOSING NOTE [2012-10-08 Mon 16:13] \\
+    Move to cock-utils.
+  #+BEGIN_SRC scheme
+    (define (foo bar)
+      @("For reals"
+        (bar (@inherit baz [qux]))))
+    
+    (define (baz qux)
+      @("Sort of"
+        (qux "Yes, wirklich")))
+  #+END_SRC
+* CANCELED Groff output for man-pages?
+  CLOSED: [2012-10-08 Mon 16:13]
+  - CLOSING NOTE [2012-10-08 Mon 16:13] \\
+    Move to cock-utils.
+  This is usually bin-specific, though; we'd put directives in the
+  bin-file, then, wouldn't we: and couldn't we parse =args= while
+  we're at it?
+* CANCELED We're still getting parser-leakage!
+  CLOSED: [2012-10-08 Mon 16:13]
+  - CLOSING NOTE [2012-10-08 Mon 16:13] \\
+    Move to cock-utils.
+* CANCELED =setup-helper=-like-thing we can call from setup.
+  CLOSED: [2012-10-08 Mon 16:13]
+  - CLOSING NOTE [2012-10-08 Mon 16:13] \\
+    Move to cock-utils.
+# <<setup-helper>>
+  Would define a form =cock= on analogy with e.g. =compile=;
+  basically, a wrapper around =run=. Has options like: =output:=; if
+  given no files, picks up all =.scm= in the directory?
+
+  Would be nice if it could default to e.g. =<egg-name>.wiki=.
+* CANCELED HTML driver
+  CLOSED: [2012-10-08 Mon 16:13]
+  - CLOSING NOTE [2012-10-08 Mon 16:13] \\
+    Move to cock-utils.
+  An HTML driver is useful, unfortunately, for e.g. github-pages.
+* CANCELED Minimum required for self-documentation
+  CLOSED: [2012-10-08 Mon 16:13]
+  - CLOSING NOTE [2012-10-08 Mon 16:13] \\
+    Move to cock-utils.
+  At the very least, let's have a =@(source ...)= directive; we could
+  have =@(text ...)=, too, but we're going to fill it with
+  wiki-specific crap.
+
+  I'm yearning for =@(example ...)=.
+* CANCELED Changelog
+  CLOSED: [2012-10-08 Mon 16:13]
+  - CLOSING NOTE [2012-10-08 Mon 16:13] \\
+    Move to cock-utils.
+* CANCELED Repository
+  CLOSED: [2012-10-08 Mon 16:13]
+  - CLOSING NOTE [2012-10-08 Mon 16:13] \\
+    Move to cock-utils.
+* CANCELED License
+  CLOSED: [2012-10-08 Mon 16:14]
+  - CLOSING NOTE [2012-10-08 Mon 16:14] \\
+    Move to cock-utils.
+* CANCELED =parse-procedure=, &c. should be more than stubs.
+  CLOSED: [2012-10-08 Mon 16:14]
+  - CLOSING NOTE [2012-10-08 Mon 16:14] \\
+    Move to cock-utils.
+  There's a lot of boilerplate work to be done there that we could
+  specialize for e.g. wiki and latex.
+* CANCELED =pre-post-order=
+  CLOSED: [2012-10-08 Mon 16:14]
+  - CLOSING NOTE [2012-10-08 Mon 16:14] \\
+    Move to cock-utils.
+  A better mechanism would be to transform the code into some
+  intermediate S-expression representation; that way, each driver is
+  simply a ruleset.
+* CANCELED Markup
+  CLOSED: [2012-10-08 Mon 16:14]
+  - CLOSING NOTE [2012-10-08 Mon 16:14] \\
+    Move to cock-utils.
+  Instead of using strings (which will be given verbatim), can't we
+  have some sort of ad-hoc s-expression-based markup? E.g.:
+
+  #+BEGIN_SRC scheme
+    @(This is (em some) (_ markup).
+      (arg "Argument"))
+  #+END_SRC
+
+  Meh; we have no good way to differentiate argument lists. Fuck it:
+  let's go [[http://wiki.call-cc.org/eggref/4/lowdown][markdown]].
+
+  (See the defunct [[https://wiki.call-cc.org/eggref/4/multidoc][multidoc]], by the way.)
+
+  It's going to be a pain-in-the-ass to distinguish between intra- and
+  inter-document links, isn't it? How I wish I could defer to the
+  renderer.
+
+  #+BEGIN_SRC scheme
+    (use debug lowdown posix srfi-69 test)
+    
+    (test
+     "All the different items we'd have to deal with."
+     '(&
+       @
+       auto-link
+       blockquote
+       bullet-list
+       class
+       code
+       comment
+       div
+       emphasis
+       explicit-link
+       h2
+       h3
+       heading
+       hr
+       href
+       html-element
+       id
+       input
+       item
+       label
+       ordered-list
+       paragraph
+       ref
+       reference
+       reference-link
+       strong
+       title
+       ul
+       verbatim)
+     (let ((items (make-hash-table)))
+       (for-each
+           (lambda (file)
+             (call-with-input-file
+                 file
+               (lambda (input)
+                 (let ((document (markdown->sxml* input)))
+                   (let iter ((document document))
+                     (if (pair? document)
+                         (for-each iter document)
+                         (if (symbol? document)
+                             (hash-table-set! items document #t))))))))
+         (glob "markdown-tests/*"))
+       (sort (hash-table-keys items)
+             (lambda (x y) (string< (symbol->string x)
+                               (symbol->string y))))))
+  #+END_SRC
+
+  #+BEGIN_SRC scheme
+    (use debug lowdown posix srfi-69 test)
+    
+    (for-each
+        (lambda (file)
+          (call-with-input-file
+              file
+            (lambda (input)
+              (let ((document (markdown->sxml* input)))
+                (debug document)
+                (let iter ((document document))
+                  (if (pair? document)
+                      (for-each iter document)
+                      (if (symbol? document)
+                          'harro)))))))
+      (glob "markdown-tests/*"))
+  #+END_SRC
+
+  #+BEGIN_SRC scheme
+    (reference (label "once") (href "/url") (title #f))
+    
+    (explicit-link
+     (href "/url/")
+     (label "URL" (#\space) "and" (#\space) "title")
+     (title "title preceded by two spaces"))
+  #+END_SRC
+
+  #+BEGIN_SRC scheme
+    (use debug lowdown sxpath sxml-transforms)
+    
+    (define texify identity)
+    
+    (define (node-children node)
+      ((sxpath '((*not* @))) node))
+        
+    (define (node-attributes node)
+      ((sxpath '(@)) node))
+    
+    (define (node-text node)
+      ((sxpath '(*text*)) node))
+    
+    (define (call-with-children-attributes tag f)
+      (f (node-children tag) (node-attributes tag)))
+    
+    (define markdown->wiki
+      `(
+        ;; Do we want text or children?
+        (code . ,(lambda tag `("{{" ,(node-children tag) "}}")))
+        (emphasis . ,(lambda tag `("''" ,(node-children tag) "''")))
+        (explicit-link
+         *preorder* . ,(lambda tag
+                         (let ((href ((sxpath '(href)) tag)) 
+                               (label ((sxpath '(label)) tag)))
+                           `("[["
+                             ,(node-children href)
+                             "|"
+                             ,(node-children label)
+                             "]]"))))
+        (paragraph . ,(lambda tag `(,(node-children tag) "\n\n")))
+        (strong . ,(lambda tag `("'''" ,(node-children tag) "'''")))
+        (*TOP* . ,(lambda tag (node-children tag)))
+        (*PI* . ,(lambda tag '()))
+        (*text* . ,(lambda (tag text) text))
+        (*default* . ,(lambda tag (node-text tag)))))
+    
+    (define markdown->latex
+      `(
+        ;; Do we want text or children?
+        (code . ,(lambda tag `("\\texttt{" ,(node-children tag) "}")))
+        (emphasis . ,(lambda tag `("\\emph{" ,(node-children tag) "}")))
+        (explicit-link
+         *preorder* . ,(lambda tag
+                         (let ((href ((sxpath '(href)) tag)) 
+                               (label ((sxpath '(label)) tag)))
+                           `("\\href{"
+                             ,(node-children href)
+                             "}{"
+                             ,(node-children label)
+                             "}"))))
+        (paragraph . ,(lambda tag `(,(node-children tag) "\n\n")))
+        (strong . ,(lambda tag `("\\textbf{" ,(node-children tag) "}")))
+        (*TOP* . ,(lambda tag (node-children tag)))
+        (*PI* . ,(lambda tag '()))
+        ;; Hallelujah: this doesn't touch string-literals above; I'm free
+        ;; to texify all text passing through here.
+        (*text* . ,(lambda (tag text) (texify text)))
+        (*default* . ,(lambda tag (node-text tag)))))
+    
+    (for-each (lambda (markdown)
+           (SRV:send-reply
+            (pre-post-order (markdown->sxml* markdown)
+                            markdown->latex
+                            ;; markdown->wiki
+                            )))
+         '("[Intradocument link](#intra)"
+           "[Interdocument link](/inter)"
+           "[Blank link]"
+           "*harro*"
+           "_harro_"
+           "**harro**"
+           "__harro__"
+           "We're writing a paragraph of text here, aren't we?
+    
+    I believe so."
+           "This `@`-read-syntax is for reals."))
+  #+END_SRC
+
+  In LaTeX, let's look for a prepended-hash: if it's there, it's a ref
+  to a label; if not, it's a hyperlink.
+* CANCELED Keyword-arguments to procedures
+  CLOSED: [2012-10-08 Mon 16:14]
+  - CLOSING NOTE [2012-10-08 Mon 16:14] \\
+    Move to cock-utils.
+  See [[http://api.call-cc.org/doc/spiffy/start-server][start-server]].
+* CANCELED Long signature get cut off in =case-lambda=.
+  CLOSED: [2012-10-08 Mon 16:14]
+  - CLOSING NOTE [2012-10-08 Mon 16:14] \\
+    Move to cock-utils.
+* CANCELED =@NB=
+  CLOSED: [2012-10-08 Mon 16:14]
+  - CLOSING NOTE [2012-10-08 Mon 16:14] \\
+    Move to cock-utils.
+* CANCELED =@TODO=
+  CLOSED: [2012-10-08 Mon 16:14]
+  - CLOSING NOTE [2012-10-08 Mon 16:14] \\
+    Move to cock-utils.
+* CANCELED References
+  CLOSED: [2012-10-08 Mon 16:14]
+  - CLOSING NOTE [2012-10-08 Mon 16:14] \\
+    Move to cock-utils.
+* CANCELED Classes?
+  CLOSED: [2012-10-08 Mon 16:14]
+  - CLOSING NOTE [2012-10-08 Mon 16:14] \\
+    Move to cock-utils.
+  Maybe this can be an extension.
+* CANCELED Define an intermediate long-hand.
+  CLOSED: [2012-10-08 Mon 16:14]
+  - CLOSING NOTE [2012-10-08 Mon 16:14] \\
+    Move to cock-utils.
+  If this, for instance, is our long-hand:
+
+  #+BEGIN_SRC scheme
+    (define (procedure a)
+      @(description: "Do something."
+        parameters: ((a "Thing to do"))
+        to: "Thing done")
+      (void))
+  #+END_SRC
+
+  we can come up with any number of short-hands that reduce to it.
+* CANCELED Ability to suppress internally documented functions.
+  CLOSED: [2012-10-08 Mon 16:14]
+  - CLOSING NOTE [2012-10-08 Mon 16:14] \\
+    Move to cock-utils.
+# <<internal-functions>>
+  Let's use =@internal=. Or: instead of =@<identifier>=, we should
+  reuse the keyword mechanism? Principle of least surprise? Would look
+  like: =internal:=. All the asperands are alien, I think.
+
+  On the other hand, how would you document keywords? No, we have to
+  resort to something noisy.
+
+  #+BEGIN_SRC scheme
+    (define (procedure a)
+      @("Procedure does something."
+        (a "Parameter")
+        ;; If we do this, we can't document keywords named `to:'.
+        (to: "Another thing")
+        ;; That's why we settled on this:
+        (@to "Another thing")
+        @internal)
+      'b)
+  #+END_SRC
+
+  Or, fuck it: just use naked symbols:
+
+  #+BEGIN_SRC scheme
+    (define (procedure a)
+      @("Procedure does something."
+        (a "Parameter")
+        ;; Don't see how we can get around this one.
+        (@to "Another thing")
+        internal)
+      'b)
+    
+    (define (procedure a)
+      @("Procedure does something."
+        (parameters
+         (a "Parameter"))
+        ;; Don't see how we can get around this one.
+        (to "Another thing")
+        internal)
+      'b)
+    
+    (define (procedure a)
+      @("Procedure does something."
+        (a "Parameter")
+        ;; Don't see how we can get around this one.
+        to: "Another thing"
+        internal:)
+      'b)
+    
+    ;;; If we're going keyword-heavy:
+    
+    (define (procedure a)
+      ;; `description:' already fucks up the indentation.
+      @(description: "Procedure does something."
+                     parameters:))
+    
+    (define (procedure a)
+      @("Procedure does something."
+        parameters: '((a "Parameter"))
+        to: "Another thing"
+        internal: #t))
+    
+  #+END_SRC
+* CANCELED Get metadata from egg.
+  CLOSED: [2012-10-08 Mon 16:14]
+  - CLOSING NOTE [2012-10-08 Mon 16:14] \\
+    Move to cock-utils.
+  Authors, &c.
+* CANCELED Multiple authors (maintainer, &c.)
+  CLOSED: [2012-10-08 Mon 16:14]
+  - CLOSING NOTE [2012-10-08 Mon 16:14] \\
+    Move to cock-utils.
+  [[http://tex.stackexchange.com/questions/9594/adding-more-than-one-author-with-different-affiliation][Using footnotes]] and [[http://tex.stackexchange.com/questions/4805/whats-the-correct-use-of-author-when-multiple-authors][using \texttt{\char`\\ and}]].
 * CANCELED Option not to export
   CLOSED: [2012-10-04 Thu 09:37]
   - CLOSING NOTE [2012-10-04 Thu 09:37] \\
