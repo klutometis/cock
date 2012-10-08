@@ -3,5 +3,5 @@
 ;;; Cock module
 (setup-shared-extension-module
  'cock
- (extension-version "0.4.1"))
+ (extension-version "0.5"))
 
