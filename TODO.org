@@ -1,3 +1,5 @@
+* TODO Need some way to protect against remove of legitimate =@s=.
+  Maybe a double =@=? The =(symbol->string “@”)= thing is ridiculous.
 * DONE Whoops: circular dependencies.
   CLOSED: [2012-10-08 Mon 16:16]
   - CLOSING NOTE [2012-10-08 Mon 16:16] \\
