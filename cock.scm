@@ -1,6 +1,10 @@
 (module cock
-  (prepend-@)
+  (at
+   prepend-@)
   (import chicken scheme)
+
+  ;; This is a hack to provide unescaped @s.
+  (define at '@)
 
   (define (prepend-@ symbol)
     (string->symbol
