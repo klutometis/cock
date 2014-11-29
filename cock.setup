@@ -3,5 +3,11 @@
 ;;; Cock module
 (setup-shared-extension-module
  'cock
- (extension-version "0.6"))
+ (extension-version "0.7"))
 
+;; By analogy with setup-helper
+(handle-exceptions exn
+  (warning "Cannot copy to Chicken Home: must use CHICKEN_INCLUDE_PATH
+when documenting an egg using \"cock\".")
+  (when (setup-install-mode)
+    (copy-file "setup-helper-cock.scm" (chicken-home))))
