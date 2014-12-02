@@ -2,4 +2,4 @@
 
 (setup-shared-extension-module
  'cock
- (extension-version "0.9"))
+ (extension-version "0.9.1"))
