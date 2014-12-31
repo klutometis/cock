@@ -131,7 +131,6 @@ pathological.
     (until (let ((a (+ (random range) 1))
                  (b (+ (random range) 1))
                  (n (+ (random range) 3)))
-             (debug (expt (+ (expt a n) (expt b n)) (/ 1 n)))
              (integer? (expt (+ (expt a n) (expt b n)) (/ 1 n)))))))</enscript>
 
 ===== {{@internal}}
