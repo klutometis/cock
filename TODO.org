@@ -1,3 +1,12 @@
+* TODO =cock-utils= docs which describe the =cock= binary
+* DONE Create an example for the docs.
+  CLOSED: [2014-12-30 Tue 16:25]
+  Let’s use e.g. naïve fib.
+
+  #+BEGIN_SRC scheme :tangle fibonacci.scm
+    (define (fibonacci n)
+      @("Compute the nth Fibonacci number."))
+  #+END_SRC
 * DONE Need some way to protect against remove of legitimate =@s=.
   CLOSED: [2014-11-29 Sat 10:36]
   Maybe a double =@=? The =(symbol->string “@”)= thing is ridiculous.

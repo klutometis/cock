@@ -1,0 +1,424 @@
+== cock
+
+[[toc:]]
+
+=== Introduction
+
+Cock is a mechanism for documenting Scheme in the source-code itself;
+similar to [[http://www.stack.nl/~dimitri/doxygen/|Doxygen]],
+[[http://en.wikipedia.org/wiki/Javadoc|Javadoc]] or
+[[http://roxygen.org/|Roxygen]].
+
+As an example, let's take this naïve Fibonacci:
+
+<enscript highlight="scheme">(define (fibonacci n)
+  @("Computes the nth [[http://en.wikipedia.org/wiki/Fibonacci_number|Fibonacci]]."
+    "This naïve algorithm runs in ''O(2^n)''; using e.g. memoization,
+we could bring it down to ''O(n)''."
+    (n "The nth number to calculate")
+    (@to "integer")
+    (@example
+     "Computing the 6th Fibonnaci number (starting from 0)"
+     (fibonacci 6)))
+  (case n
+    ((0) 0)
+    ((1) 1)
+    (else (+ (fibonacci (- n 1))
+             (fibonacci (- n 2))))))</enscript>
+
+It produces the following output:
+
+==== {{fibonacci}}
+<procedure>(fibonacci n) → number</procedure>
+Computes the nth [[http://en.wikipedia.org/wiki/Fibonacci_number|Fibonacci number]].
+
+This naïve algorithm runs in ''O(2^n)''; using e.g. memoization, we
+could bring it down to ''O(n)''.
+; {{n}} : The nth number to calculate
+<enscript highlight="scheme">(define (fibonacci n)
+  (case n ((0) 0) ((1) 1) (else (+ (fibonacci (- n 1)) (fibonacci (- n 2))))))
+</enscript>
+===== Examples
+Computing the 6th Fibonnaci number (starting from 0)
+ (fibonacci 6)
+ => 8
+
+=== Syntax
+
+To document definitions, insert a so-called document-expression
+("docexpr") after the variable (or variable-formals) and before the
+body of the definition.
+
+The docexpr is an ampersand-prefixed expression containing a
+description; and optionally a longer description, parameters, return
+values and examples.
+
+==== Variables
+
+Variables such as constants and parameters, for example, only require
+a description:
+
+<enscript highlight="scheme">(define k @("The Boltzmann constant") 1.38e-23)</enscript>
+
+The general form for variables is therefore something like:
+
+<enscript highlight="scheme">(define <variable> @(<description> [<longer description>]) <expression>)</enscript>
+
+==== Procedures
+
+Procedures, on the other hand, can provide parameters, return-values
+and examples; parameters are specified with key-value lists containing
+the parameter and a description of the parameter; whereas
+return-values and examples are key-value lists containing the special
+keys {{@to}} and {{@example}} respectively.
+
+<enscript highlight="scheme">(define (add x y)
+  @("Adds two numbers."
+    (x "The augend")
+    (y "The addend")
+    (@to "number")
+    (@example "Adding two imprecise binary numbers"
+              (add #b1# #b1##)))
+  (+ x y))</enscript>
+
+Notice that {{@example}} takes a description, too; the general form
+for procedures is therefore something like:
+
+<enscript highlight="scheme">(define (<variable> <formals>)
+  @(<description>
+    [<longer description>]
+    [(<formal-0> <formal-description-0>) ...
+     (<formal-n> <formal-description-n>)]
+    [(@to <return-type>)]
+    [(@example <example-description>
+               <example-expression-0> ... <example-expression-n>)]))</enscript>
+
+==== Special tags
+
+===== {{@example}}
+
+The {{@example}} tag is useful for providing examples of
+procedure-application.
+
+<enscript highlight="scheme">(define (quadratic-diophantine z)
+  @("Finds a solution to the quadratic Diophantine equation x^2 + y^2 = z^2, given z."
+    "Returns two values, x and y."
+    (z "The known side")
+    (@to "number, number")
+    (@example "An example from Arithmetica II.VIII"
+              (quadratic-diophantine 16)))
+  (let* ((m (random (inexact->exact (floor (sqrt z)))))
+         (n (sqrt (- z (expt m 2)))))
+    (let ((x (- (expt m 2) (expt n 2)))
+          (y (* 2 m n)))
+      (values x y))))</enscript>
+
+===== {{@example-no-eval}}
+
+The {{@example-no-eval}} tag is also useful for providing examples of
+procedure-application; the difference is that cock does not attempt to
+evaluate them when rendering the documentation.
+
+{{@Example-no-eval}} is useful when the examples are incomplete or
+pathological.
+
+<enscript highlight="scheme">(define (find-fermat-counterexample)
+  @("Finds positive integers a, b, c and n > 2 for which a^n + b^n = c^n."
+    (@example-no-eval "Warning: this should never terminate."
+                      (find-fermat-counterexample)))
+  ;; The testable range is pretty small.
+  (let ((range 8))
+    (until (let ((a (+ (random range) 1))
+                 (b (+ (random range) 1))
+                 (n (+ (random range) 3)))
+             (debug (expt (+ (expt a n) (expt b n)) (/ 1 n)))
+             (integer? (expt (+ (expt a n) (expt b n)) (/ 1 n)))))))</enscript>
+
+===== {{@internal}}
+
+The {{@internal}} tag signifies that the documentation for the given
+expression should be suppressed; it is useful for internal
+documentation.
+
+<enscript highlight="scheme">(define cat-alive?
+  @("Qubit representing whether or not our cat is alive"
+    "{{Cat-alive?}} is internal so that observers are forced to use
+the {{observe!}} procedure."
+    (@internal))
+  (make-qubit))</enscript>
+
+===== {{@no-source}}
+
+The {{@no-source}} tag turns off the source-code listing that
+accompanies documented expressions.
+
+<enscript highlight="scheme">(define (vote! candidate)
+  @("[[http://youtu.be/IoWJkrlptNs|Votes]] for your candidate!"
+    "This black-box voting procedure is the trade-secret of Biedolb,
+Inc.; the source-code has been suppressed."
+    (candidate "The candidate for which to vote")
+    (@no-source))
+  (register-vote! 'president-mccain))</enscript>
+
+===== {{@to}}
+
+The {{@to}} tag is optional and specifies the return value of a
+procedure; in the absence of {{@to}}, the return value is considered
+to be {{unspecified}}.
+
+This procedure, for instance, has an {{unspecified}} return type:
+
+<enscript highlight="scheme">(define (entangle! register . qs)
+  @("Entangles qubits in a register."
+    (register "The register in which to entangle")
+    (qs "The qubits to be entangled"))
+  (for-each (lambda (q) (set-register! q register)) qs))</enscript>
+
+whereas this one returns a specific type:
+
+<enscript highlight="scheme">(define (apply-gate gate . qs)
+  @("Applies the quantum-gate to the qubits."
+    (gate "The quantum gate to apply")
+    (qs "The qubits on which to apply it")
+    (@to "qubit"))
+  (make-qubit (matrix-multiply (apply quantum-state qs) gate)))</enscript>
+
+==== Top-level directives
+
+Some of the top-level directives deal with metadata already gleaned
+from the {{.meta}} file and are therefore redundant; others deal with
+presentation, and are useful for crafting introductions, &c.
+
+===== {{author}}
+
+{{Author}} is the author of the egg; it overrides {{(author "Egg
+Author")}} from the {{.meta}} file.
+
+<enscript highlight="scheme">@(author "Diophantus of Alexandria")</enscript>
+
+===== {{description}}
+
+{{Description}} describes the egg; it overrides {{(synopsis "Egg synopsis")}} from the {{.meta}} file.
+
+<enscript highlight="scheme">@(description "To divide a given square number into two squares")</enscript>
+
+===== {{egg}}
+
+{{Egg}} is the name of the egg; it overrides the filename of the
+{{.meta}} file (i.e. "name" from {{name.meta}}).
+
+<enscript highlight="scheme">@(egg "arithmetica")</enscript>
+
+===== {{email}}
+
+{{Email}} is the author's email; it overrides {{(email "author@example.com")}} from the {{.meta}} file.
+
+<enscript highlight="scheme">@(email "diophantus@alexandria.net")</enscript>
+
+===== {{example}}
+
+{{Example}} is a stand-alone example, as opposed to the {{@example}}
+tag that accompanies procedures.
+
+<enscript highlight="scheme">@(example "Riastradh once asked why this does what it does; no one had
+a satisfactory answer."
+  (let* ((yin ((lambda (y) (newline) y)
+                       (call/cc call/cc)))
+                 (yang ((lambda (y) (write-char #\*) y)
+                        (call/cc call/cc))))
+            (yin yang)))</enscript>
+
+===== {{example-no-eval}}
+
+{{Example-no-eval}} is a stand-alone, unevaluated example; as opposed
+to the {{@example-no-eval}} tag that accompanies procedures.
+
+<enscript highlight="scheme">@(example-no-eval "This will never terminate; thanks, Eli!"
+                  ((lambda (x) (x x)) (lambda (x) (x x))))</enscript>
+
+===== {{heading}}
+
+{{Heading}} designates a section of the documentation right below the
+level of title.
+
+<enscript highlight="scheme">@(heading "Arithmeticorum Liber II")</enscript>
+
+===== {{noop}}
+
+{{Noop}} is an artifact required to separate presentation-based
+directives from source-code that they don't belong to.
+
+For instance:
+
+<enscript highlight="scheme">@(heading "Abstract")
+@(text "This is the body of the abstract.")
+@(noop)
+
+(define phi
+  @("The heading and text above do not belong to this variable.")
+  (/ (+ 1 (sqrt 5)) 2))</enscript>
+
+===== {{repo}}
+
+{{Repo}} overrides {{(repo "https://example.com/repo.git")}} from the {{.meta}} file.
+
+(TODO: Implement this.)
+
+===== {{source}}
+
+{{Source}} provides a stand-alone source-code listing.
+
+<enscript highlight="scheme">@(text "Through an aggressive heuristic, we've managed to solve the
+halting problem: let's assume that if it doesn't finish in 1 second,
+it never will.")
+
+@(source
+  (define (terminate? thunk)
+    (let ((thread (thread-start! (make-thread thunk))))
+      (and (thread-join! thread 1 #f)
+           (thread-terminate! thread)
+           #t))))</enscript>
+
+===== {{subheading}}
+
+{{Subheading}} designates a section of the documentation right below
+the level of heading.
+
+<enscript highlight="scheme">@(subheading "Quaestio VIII")</enscript>
+
+===== {{subsubheading}}
+
+{{Subsubheading}} designates a section of the documentation right
+below the level of subheading.
+
+<enscript highlight="scheme">@(subsubheading "Observatio domini Petri de Fermat")</enscript>
+
+===== {{text}}
+
+{{Text}} is used for free-form text and can be useful for abstracts
+and explanatory material.
+
+<enscript highlight="scheme">@(text "I have discovered a truly marvellous proof of this, which this
+margin is too narrow to contain.")</enscript>
+
+===== {{title}}
+
+{{Title}} overrides the egg-name as the title of the document.
+
+<enscript highlight="scheme">@(title "Arithmetica")</enscript>
+
+===== {{username}}
+
+{{Username}} is the username of the author on Chicken's wiki; it
+overrides {{(user "chicken-user")}} from the {{.meta}} file.
+
+<enscript highlight="scheme">@(username "pfermat")</enscript>
+
+(TODO: Let's rename this {{user}}.)
+
+=== Complete example
+
+To tie everything together, here's a
+[[https://github.com/klutometis/landauer|complete example]]; see the
+[[https://wiki.call-cc.org/eggref/4/landauer|resulting
+documentation]].
+
+==== The {{.meta}} file
+
+Cock reads the metadata from the {{.meta}} file such as: {{synopsis}},
+{{author}}, {{email}}, {{user}}, {{repo}}, {{depends}}.
+
+<enscript highlight="scheme">((synopsis "Use the Landauer limit to calculate my program's entropy.")
+ (author "Peter Danenberg")
+ (email "pcd@roxygen.org")
+ (user "klutometis")
+ (repo "https://github.com/klutometis/landauer")
+ (category math)
+ (license "BSD")
+ (depends cock)
+ (test-depends test)
+ (foreign-depends))</enscript>
+
+==== The module file
+
+The module file is a suitable place for putting introductory material
+about the egg; such as background information, abstract, &c.
+
+It is also suitable for a high-level overview of what the module does.
+
+<enscript highlight="scheme">@(heading "Landauer's principle")
+
+@(text "[[http://en.wikipedia.org/wiki/Landauer%27s_principle|Landauer's
+principle]] states that every irreversible operation produces
+entropy; erasing one bit, for instance, generates at least ''kT'' ln
+2 J of heat.")
+
+@(text "We can use Landauer's principle to calculate a lower-bound on
+the energy released by our program, given some number of
+bit-operations.")
+
+@(heading "Documentation")
+@(noop)
+
+(module landauer
+  @("The Landauer module contains contains some constants, parameters
+and procedures for calculating a lower-bound on the heat-dissipation
+of programs.")
+  (heat
+   k
+   room-temperature)
+  (import chicken scheme)
+  (include "landauer-core.scm"))</enscript>
+
+==== The source file
+
+The source file contains the documentation of individual constants,
+parameters, records, procedures.
+
+<enscript highlight="scheme">(define k @("The Boltzmann constant") 1.38e-23)
+
+(define room-temperature @("Room temperature in K")
+  (make-parameter 298.15))
+
+(define (heat operations)
+  @("Calculate a lower-bound on the heat dissipated by some number
+of irreversible bit-operations."
+    "Room-temperature is governed by the [[#room-temperature]]
+parameter."
+    (operations "The number of irreversible bit-operations")
+    (@to "number"))
+  (* operations k (room-temperature) (log 2)))</enscript>
+
+==== The {{.setup}} file
+
+The {{.setup}} file does two things:
+
+# compiles each extension with {{-X cock}}; and
+# generates documention.
+
+Extensions should be compiled with {{-X cock}}; this strips the
+documentation from the source before compilation so that the compiler
+is not confused.
+
+The {{cock}} binary from [[cock-utils]] generates the actual
+documentation; the {{cock}} egg provides a convenience macro
+{{run-cock}} so that installation does not fail for users who haven't
+installed {{cock-utils}}.
+
+There is a soft-dependency on the otherwise dependency-heavy egg
+{{cock-utils}}: users don't have to have it unless they want to
+generate docs themselves, for some reason.
+
+<enscript highlight="scheme">(use cock setup-helper-mod)
+
+(setup-shared-extension-module
+ 'landauer
+ (extension-version "0.0.1")
+ compile-options: '(-X cock))
+
+(run-cock -o landauer.wiki landauer.scm landauer-core.scm)</enscript>
+
+=== Limitations
+
+* The repository-awareness is Git-specific.
+* The version-awareness is Github-specific.
