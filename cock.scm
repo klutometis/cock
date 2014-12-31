@@ -6,7 +6,11 @@
     (ir-macro-transformer
      (lambda (expression rename inject)
        `(handle-exceptions exn
-          (warning (format "Documentation not generated: ~a"
+          (warning (format "Documentation not generated: ~a
+
+This may be because cock-utils is not installed. Cock-utils is an
+optional egg for generating documentation and installation will
+succeed without it."
                            ((condition-property-accessor 'exn 'message) exn)))
           (run (cock ,@(cdr expression)))))))
 
