@@ -2,6 +2,10 @@
 
 [[toc:]]
 
+=== Deprecation
+
+Cock has been deprecated for [[egg/hahn|hahn]].
+
 === Introduction
 
 Cock is a mechanism for documenting Scheme in the source-code itself;
