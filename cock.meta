@@ -1,6 +1,6 @@
-((synopsis "In-source documentation")
+((synopsis "In-source documentation: deprecated for hahn")
  (author "Peter Danenberg")
- (category doc-tools)
+ (category obsolete)
  (license "BSD")
  (depends setup-helper)
  (test-depends)
